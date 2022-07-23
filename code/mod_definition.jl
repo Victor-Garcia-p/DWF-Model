@@ -1,6 +1,7 @@
 #info: This file creates the model considering the grid, boundary conditions and initial conditions
 #input: grid, initial & boundary conditions 
 #output: jld2 ("model_data") with the data of the model previous of the simulation
+#output2: jld2 ("model_data_sim") copy of the same file, but this will be overwriten by the simulation
 #time excecution: 1,5 min aprox
 
 #ERROR: the "initial conditions" file has and error because it is not possible to define variables and the order @load gives and error
@@ -80,11 +81,21 @@ simulation.callbacks[:progress] = Callback(progress_message, IterationInterval(2
 ## Create a NamedTuple with eddy viscosity
 eddy_viscosity = (; νₑ = model.diffusivity_fields.νₑ)
 
-filename = "model_data"
+filename1 = "model_data"
 
 simulation.output_writers[:slices] =
     JLD2OutputWriter(model, merge(model.velocities, model.tracers, eddy_viscosity),
-                     filename = filename * ".jld2",
+                     filename = filename1 * ".jld2",
+                     indices = (:, grid.Ny/2, :),
+                     schedule = TimeInterval(1minute),
+                     overwrite_existing = true)
+#Make a copy of the file that will be used in the simulation
+
+filename2 = "model_data_sim"
+
+simulation.output_writers[:slices] =
+    JLD2OutputWriter(model, merge(model.velocities, model.tracers, eddy_viscosity),
+                     filename = filename2 * ".jld2",
                      indices = (:, grid.Ny/2, :),
                      schedule = TimeInterval(1minute),
                      overwrite_existing = true)
