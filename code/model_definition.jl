@@ -1,5 +1,5 @@
 #info: This file creates the model considering the grid, boundary conditions and initial conditions
-#input: grid, initial & boundary conditions 
+#input: grid, initial & boundary conditions functions 
 #output: jld2 ("model_data") with the data of the model previous of the simulation
 #output2: jld2 ("model_data_sim") copy of the same file, but this will be overwriten by the simulation
 #time excecution: 1,5 min aprox
@@ -10,16 +10,30 @@ using Oceananigans
 using JLD2
 using Printf
 
+path="D:/Documents/Universidad/TFG/DWC_model/data/"
+filename1 = "model_data.jld2"
+filename2 = "model_data_sim.jld2"
+
 include("initial_conditions.jl")
-@load "grid.jld2" grid
-include("boundary_conditions.jl")
+@load path * "grid.jld2" grid
+include("forcing_conditions.jl")
+
 
 #2n alternative: @load "boundary_conditions.jld2" buoyancy u_bcs T_bcs S_bcs Qᵘ Qᵀ Qˢ evaporation_bc
 #include("boundary_conditions.jl")
 #we are using the alternative as function not not working: @load "grid.jld2" uᵢ Tᵢ S
 
 
+# ## Buoyancy that depends on temperature and salinity
+#
+# We use the `SeawaterBuoyancy` model with a linear equation of state,
+
+buoyancy = SeawaterBuoyancy(equation_of_state=LinearEquationOfState(thermal_expansion = 2e-4,
+                                                                    haline_contraction = 8e-4))
+
+
 # ## Model instantiation
+
 #
 # We fill in the final details of the model here: upwind-biased 5th-order
 # advection for momentum and tracers, 3rd-order Runge-Kutta time-stepping,
@@ -81,21 +95,18 @@ simulation.callbacks[:progress] = Callback(progress_message, IterationInterval(2
 ## Create a NamedTuple with eddy viscosity
 eddy_viscosity = (; νₑ = model.diffusivity_fields.νₑ)
 
-filename1 = "model_data"
-
 simulation.output_writers[:slices] =
     JLD2OutputWriter(model, merge(model.velocities, model.tracers, eddy_viscosity),
-                     filename = filename1 * ".jld2",
+                     filename = path * filename1,
                      indices = (:, grid.Ny/2, :),
                      schedule = TimeInterval(1minute),
                      overwrite_existing = true)
-#Make a copy of the file that will be used in the simulation
 
-filename2 = "model_data_sim"
+#Make a copy of the file that will be used in the simulation
 
 simulation.output_writers[:slices] =
     JLD2OutputWriter(model, merge(model.velocities, model.tracers, eddy_viscosity),
-                     filename = filename2 * ".jld2",
+                     filename = path * filename2,
                      indices = (:, grid.Ny/2, :),
                      schedule = TimeInterval(1minute),
                      overwrite_existing = true)

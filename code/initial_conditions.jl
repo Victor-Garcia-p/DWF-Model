@@ -1,9 +1,18 @@
-#use: this file contains the initial conditions of the model
+#use: this file contains the initial conditions of the model.
+#note:The functions contains variables that are not loaded (ej: model.grid). As a consequence the function can not be 
+#solved. The file purpose is just to define rather than to solve any equation.
 
 using Oceananigans
 using JLD2
 
-@load "grid.jld2"
+
+#define the filename and its path, and load the grid
+
+path="D:/Documents/Universidad/TFG/DWC_model/data/"
+namefile= "initial_conditions.jld2"
+
+#@load path * "grid.jld2" grid
+
 
 # ## Initial conditions
 #

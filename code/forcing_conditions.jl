@@ -1,15 +1,17 @@
-#info: this file contains the bounda
+#info: this file contains the forcing conditions, those that affect the water surface (surface T,S and velocity)
+#in the script boundary conditions are a general therm of both boundary and forcing
+#out: a file with the expressions, that is saved in the path
 
 using Oceananigans
 using Oceananigans.Units: minute, minutes, hour
 using JLD2
 
-# ## Buoyancy that depends on temperature and salinity
-#
-# We use the `SeawaterBuoyancy` model with a linear equation of state,
+#define the filename and its path
 
-buoyancy = SeawaterBuoyancy(equation_of_state=LinearEquationOfState(thermal_expansion = 2e-4,
-                                                                    haline_contraction = 8e-4))
+path="D:/Documents/Universidad/TFG/DWC_model/data/"
+namefile= "forcing_conditions.jld2"
+
+
 
 # ## Boundary conditions
 #
@@ -68,4 +70,6 @@ evaporation_bc = FluxBoundaryCondition(Qˢ, field_dependencies=:S, parameters=ev
 
 S_bcs = FieldBoundaryConditions(top=evaporation_bc)
 
-@save "boundary_conditions.jld2" buoyancy u_bcs T_bcs S_bcs Qᵘ Qᵀ Qˢ evaporation_bc
+
+#save the file
+@save path * namefile u_bcs T_bcs S_bcs Qᵘ Qᵀ Qˢ evaporation_bc

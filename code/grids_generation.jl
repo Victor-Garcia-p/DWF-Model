@@ -1,10 +1,11 @@
 #use: this file contains all the functions required to create the grid
-
 #and also the parameters like stretching or refinement
-#note: if possible try to save the grid in a separate file
+#output: file jld2 with only the grid data. Saved in the path
 
 using Oceananigans
 using JLD2
+
+path="D:/Documents/Universidad/TFG/DWC_model/data/"
 
 # ## The grid
 #
@@ -41,4 +42,4 @@ grid = RectilinearGrid(size = (32, 32, Nz),
                           z = z_faces)
 #save the grid into a jld2 file. it can be opened with @load
 
-@save "grid.jld2" grid
+@save path * "grid.jld2" grid

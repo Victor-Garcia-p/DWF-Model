@@ -1,9 +1,9 @@
 #use: this file contains all the functions to plot different variables of the model
 
-using CairoMakie
-using JLD2
 
 #1)Ploting the sparcing of the model
+using CairoMakie
+using JLD2
 
 #We plot vertical spacing versus depth to inspect the prescribed grid stretching:
 
@@ -17,31 +17,30 @@ scatter!(ax, grid.Δzᵃᵃᶜ[1:Nz], grid.zᵃᵃᶜ[1:Nz])
 save("ocean_wind_mixing_convection_grid_spacing.svg", fig)
 nothing #hide
 
-
-
+##
 #2)Video of the data
 using CairoMakie
 using JLD2
 using Printf
 using Oceananigans.Units: minute, minutes, hour
 
-@load "grid.jld2" grid
-
-# ## Turbulence visualization
+# Turbulence visualization
 #
 # We animate the data saved in `ocean_wind_mixing_and_convection.jld2`.
 # We prepare for animating the flow by loading the data into
 # FieldTimeSeries and defining functions for computing colorbar limits.
 
-filename="simulation"
-filepath = "model_data.jld2"
+filepath_out = "D:/Documents/Universidad/TFG/DWC_model/Plots/Simulations/"
+filename= "Default.mp4"
 
-time_series = (w = FieldTimeSeries(filepath, "w"),
-               T = FieldTimeSeries(filepath, "T"),
-               S = FieldTimeSeries(filepath, "S"),
-               νₑ = FieldTimeSeries(filepath, "νₑ"))
+filepath_in= "D:/Documents/Universidad/TFG/DWC_model/data/model_data_sim.jld2"
 
-## Coordinate arrays
+time_series = (w = FieldTimeSeries(filepath_in, "w"),
+               T = FieldTimeSeries(filepath_in, "T"),
+               S = FieldTimeSeries(filepath_in, "S"),
+               νₑ = FieldTimeSeries(filepath_in, "νₑ"))
+
+# Coordinate arrays
 xw, yw, zw = nodes(time_series.w)
 xT, yT, zT = nodes(time_series.T)
 
@@ -119,7 +118,7 @@ frames = intro:length(times)
 
 @info "Making a motion picture of ocean wind mixing and convection..."
 
-record(fig, filename * ".mp4", frames, framerate=8) do i
+record(fig, filepath_out * filename, frames, framerate=8) do i
     msg = string("Plotting frame ", i, " of ", frames[end])
     print(msg * " \r")
     n[] = i
