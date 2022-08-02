@@ -1,10 +1,13 @@
 #use: this file contains all the functions to plot different variables of the model
 
-
-#1)Ploting the sparcing of the model
+#0) Import all the package that are required
 using CairoMakie
 using JLD2
 
+using Printf
+using Oceananigans.Units: minute, minutes, hour
+
+#1)Ploting the sparcing of the model
 #We plot vertical spacing versus depth to inspect the prescribed grid stretching:
 
 @load "grid.jld2" grid
@@ -19,10 +22,6 @@ nothing #hide
 
 ##
 #2)Video of the data
-using CairoMakie
-using JLD2
-using Printf
-using Oceananigans.Units: minute, minutes, hour
 
 # Turbulence visualization
 #
