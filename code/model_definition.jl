@@ -10,14 +10,13 @@ using Oceananigans
 using JLD2
 using Printf
 
-path="D:/Documents/Universidad/TFG/DWC_model/data/"
+path = ENV["PATH_TO_DATA"]
 filename1 = "model_data.jld2"
-filename2 = "model_data_sim.jld2"
+filename2 = "model_data_sim.jld2" #a copy of the same file
 
 include("initial_conditions.jl")
 @load path * "grid.jld2" grid
 include("forcing_conditions.jl")
-
 
 #2n alternative: @load "boundary_conditions.jld2" buoyancy u_bcs T_bcs S_bcs Qᵘ Qᵀ Qˢ evaporation_bc
 #include("boundary_conditions.jl")

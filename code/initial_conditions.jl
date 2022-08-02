@@ -8,7 +8,7 @@ using JLD2
 
 #define the filename and its path, and load the grid
 
-path="D:/Documents/Universidad/TFG/DWC_model/data/"
+path = ENV["PATH_TO_DATA"]
 namefile= "initial_conditions.jld2"
 
 #@load path * "grid.jld2" grid
@@ -31,5 +31,6 @@ uᵢ(x, y, z) = sqrt(abs(Qᵘ)) * 1e-3 * Ξ(z)
 
 #Reference salinity used to set the model (function !set)
 const S=35
+nothing
 
 #not working properly @save ("initial_conditions.jld2") Ξ(z)

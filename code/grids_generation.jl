@@ -5,7 +5,7 @@
 using Oceananigans
 using JLD2
 
-path="D:/Documents/Universidad/TFG/DWC_model/data/"
+path = ENV["PATH_TO_DATA"]
 
 # ## The grid
 #

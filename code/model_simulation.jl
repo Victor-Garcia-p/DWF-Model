@@ -7,7 +7,13 @@ using Oceananigans
 using JLD2
 
 #load the data
-@load "D:/Documents/Universidad/TFG/DWC_model/data/model_data_sim.jld2" 
+
+path = ENV["PATH_TO_DATA"]
+
+#NOT WORKING
+#@load path * "model_data_sim.jld2"  
+#alternative
+include("model_definition.jl")
 
 
 run!(simulation)

@@ -8,9 +8,8 @@ using JLD2
 
 #define the filename and its path
 
-path="D:/Documents/Universidad/TFG/DWC_model/data/"
+path = ENV["PATH_TO_DATA"]
 namefile= "forcing_conditions.jld2"
-
 
 
 # ## Boundary conditions
