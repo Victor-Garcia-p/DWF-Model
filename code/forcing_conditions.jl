@@ -1,16 +1,9 @@
 #info: this file contains the forcing conditions, those that affect the water surface (surface T,S and velocity)
 #in the script boundary conditions are a general therm of both boundary and forcing
-#out: a file with the expressions, that is saved in the path
 
 using Oceananigans
 using Oceananigans.Units: minute, minutes, hour
 using JLD2
-
-#define the filename and its path
-
-path = ENV["PATH_TO_DATA"]
-namefile= "forcing_conditions.jld2"
-
 
 # ## Boundary conditions
 #
@@ -68,7 +61,3 @@ evaporation_bc = FluxBoundaryCondition(Qˢ, field_dependencies=:S, parameters=ev
 # The full salinity boundary conditions are
 
 S_bcs = FieldBoundaryConditions(top=evaporation_bc)
-
-
-#save the file
-@save path * namefile u_bcs T_bcs S_bcs Qᵘ Qᵀ Qˢ evaporation_bc

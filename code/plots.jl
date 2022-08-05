@@ -7,10 +7,20 @@ using JLD2
 using Printf
 using Oceananigans.Units: minute, minutes, hour
 
-#1)Ploting the sparcing of the model
-#We plot vertical spacing versus depth to inspect the prescribed grid stretching:
 
-@load "grid.jld2" grid
+#1)Ploting the sparcing of the model
+#use: We plot vertical spacing versus depth to inspect the prescribed grid stretching:
+
+#define the path and load the grid
+path = joinpath(@__DIR__, "..", "data")
+file=joinpath(path,"grid.jld2")
+
+if isfile(file)
+    @load file grid
+else
+    # Put an error message
+    error("Missing grid file") 
+end
 
 fig = Figure(resolution=(1200, 800))
 ax = Axis(fig[1, 1], ylabel = "Depth (m)", xlabel = "Vertical spacing (m)")
@@ -22,17 +32,18 @@ nothing #hide
 
 ##
 #2)Video of the data
+#use: We animate the data saved in `ocean_wind_mixing_and_convection.jld2`.
+#NOTE: THE SIMULATION WILL START AT 1MIN, IT NEEDS TO BE CHANGED INTO 10MIN
+filepath_in= joinpath(@__DIR__, "..", "data","model_data_sim.jld2")
+
+filepath_out = joinpath(@__DIR__, "..", "Plots", "Simulations")
+video_name="Quick_test.mp4"
 
 # Turbulence visualization
-#
-# We animate the data saved in `ocean_wind_mixing_and_convection.jld2`.
+
 # We prepare for animating the flow by loading the data into
 # FieldTimeSeries and defining functions for computing colorbar limits.
 
-filepath_out = "D:/Documents/Universidad/TFG/DWC_model/Plots/Simulations/"
-filename= "Default.mp4"
-
-filepath_in= "D:/Documents/Universidad/TFG/DWC_model/data/model_data_sim.jld2"
 
 time_series = (w = FieldTimeSeries(filepath_in, "w"),
                T = FieldTimeSeries(filepath_in, "T"),
@@ -117,7 +128,7 @@ frames = intro:length(times)
 
 @info "Making a motion picture of ocean wind mixing and convection..."
 
-record(fig, filepath_out * filename, frames, framerate=8) do i
+record(fig, joinpath(filepath_out,video_name), frames, framerate=8) do i
     msg = string("Plotting frame ", i, " of ", frames[end])
     print(msg * " \r")
     n[] = i
