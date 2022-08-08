@@ -34,10 +34,10 @@ nothing #hide
 #2)Video of the data
 #use: We animate the data saved in `ocean_wind_mixing_and_convection.jld2`.
 #NOTE: THE SIMULATION WILL START AT 1MIN, IT NEEDS TO BE CHANGED INTO 10MIN
-filepath_in= joinpath(@__DIR__, "..", "data","model_data_sim.jld2")
+filepath_in= joinpath(@__DIR__, "..", "data","model_data_v_10_sim.jld2")
 
 filepath_out = joinpath(@__DIR__, "..", "Plots", "Simulations")
-video_name="Quick_test.mp4"
+video_name="Quick_test_v10.mp4"
 
 # Turbulence visualization
 
@@ -136,3 +136,4 @@ end
 nothing #hide
 
 # ![](ocean_wind_mixing_and_convection.mp4)
+

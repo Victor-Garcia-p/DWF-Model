@@ -27,8 +27,8 @@ include("forcing_conditions.jl")
 include("initial_conditions.jl")
 
 #define the name of the output files
-filename1 = "model_data.jld2"
-filename2 = "model_data_sim.jld2" #a copy of the same file
+filename1 = "model_data_v20.jld2"
+filename2 = "model_data_v_20_sim.jld2" #a copy of the same file
 
 
 # ## Buoyancy that depends on temperature and salinity
@@ -72,7 +72,7 @@ set!(model, u=uᵢ, w=uᵢ, T=Tᵢ, S=S)
 # We set-up a simulation with an initial time-step of 10 seconds
 # that stops at 40 minutes, with adaptive time-stepping and progress printing.
 
-simulation = Simulation(model, Δt=10.0, stop_time=15minutes)
+simulation = Simulation(model, Δt=10.0, stop_time=20minutes)
 
 # The `TimeStepWizard` helps ensure stable time-stepping
 # with a Courant-Freidrichs-Lewy (CFL) number of 1.0.   
@@ -118,6 +118,4 @@ simulation.output_writers[:slices] =
                      indices = (:, grid.Ny/2, :),
                      schedule = TimeInterval(1minute),
                      overwrite_existing = true)
-#
-
-run!(simulation)
+#run!(simulation)

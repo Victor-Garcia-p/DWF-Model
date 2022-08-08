@@ -44,4 +44,4 @@ grid = RectilinearGrid(size = (32, 32, Nz),
                           z = z_faces)
 #save the grid into a jld2 file. it can be opened with @load
 
-@save path grid
+@save path grid 

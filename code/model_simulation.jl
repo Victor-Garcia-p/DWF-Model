@@ -3,24 +3,17 @@
 #out: "model_data_sim.jld2" (796kB)
 #execution time: 320 iterations, 8min 
 
-#NOTE: THE FILE IS NOT WORKING
-
 using Oceananigans
-using JLD2
-
-#Define the path of the data files
-path = joinpath(@__DIR__, "..", "data")
 
 #Load the grid
-file=joinpath(path,"model_data_sim.jld2")
+file="model_definition.jl"
 
 if isfile(file)
-    @load file grid coriolis buoyancy closure serialized timeseries
-    @load "simulation.jld2" simulation
+    include(file)
 else
     # Put an error message
-    error("Missing grid file") 
+    error("Missing file") 
 end
 
-
+##
 run!(simulation)
