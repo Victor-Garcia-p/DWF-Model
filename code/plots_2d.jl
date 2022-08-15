@@ -1,9 +1,11 @@
-#1)Load the requirements
 
-using JLD2
 using CairoMakie
+using Oceananigans
 
-#define the path and load the variables
+##SINGLE SIMULATION PLOTS
+
+##0
+#0)Define the path and load
 path = joinpath(@__DIR__, "grids_generation.jl")
 filepath_in= joinpath(@__DIR__, "..", "data","model_data_sim.jld2")
 
@@ -14,14 +16,14 @@ else
     error("Missing grid file") 
 end
 
-#load the data
+#load 
 T = FieldTimeSeries(filepath_in,"T")
 S = FieldTimeSeries(filepath_in, "S")
 
 xT, yT, zT = nodes(T)
 
-##
-#2)Make a profile
+##1
+#1)Make a profile
 t_0=T.data[32,16,:,1]
 t_40=T.data[32,16,:,41]
 t_40_2=T.data[20,16,:,41]
@@ -36,8 +38,8 @@ Legend(fig[1, 2],[sca0,sca1,sca2],["initial","pos1","pos2"])
 
 display(fig)
 
-##
-#3) Create a TS diagrame
+##2
+#2) Create a TS diagrame
 
 TS = Figure(resolution=(1200, 800))
 ax = Axis(TS[1, 1], ylabel = "Temperature(°C)", xlabel = "Salinity(psu)")
@@ -50,8 +52,8 @@ Colorbar(TS[1, 2], limits = (-30,0),ticks = -30:6:0,
 #
 display(TS)
 
-##          
-#4) Create a transversal section, x, in a fixed t
+##3          
+#3) Create a transversal section, x, in a fixed t
 #note: a meridional section would be the same fixing x and not the y
 Tn=reshape(T.data[:,16,:,41],(32,24))
 
@@ -86,5 +88,35 @@ ax_T  = Axis(fig[1,1]; title = "Temperature evolution at a fixed location",
     axis_kwargs...)
 hm_T = heatmap!(ax_T,T.times, zT,Tn,colormap = :thermal)
 Colorbar(fig[1, 2], hm_T; label = "Temperature ᵒC")
+
+display(fig)
+
+
+##COMPARATIVE PLOTS
+
+##
+#6)Make a comparative profile of both simulations at the same location
+
+#define the path and load the variables
+filepath_in= joinpath(@__DIR__, "..", "data","model_data_v_10_sim.jld2")
+filepath_in_2= joinpath(@__DIR__, "..", "data","model_data_v_20_sim.jld2")
+
+#load the data for simulation 1&2
+T_10 = FieldTimeSeries(filepath_in,"T")
+T_20 = FieldTimeSeries(filepath_in_2,"T")
+
+#Nodes do not change because the grid is the same
+xT, yT, zT = nodes(T_10)
+
+#2)Make a comparative profile of both simulations at the same location
+t_20=T_10.data[32,16,:,21]
+t_20_2=T_20.data[32,16,:,21]
+
+fig = Figure(resolution=(1200, 800))
+ax = Axis(fig[1, 1], ylabel = "Depth (m)", xlabel = "Temperature(C)")
+sca1=scatter!(ax, t_20, zT)
+sca2=scatter!(ax, t_20_2, zT)
+
+Legend(fig[1, 2],[sca1,sca2],["v_10","v_20"])
 
 display(fig)
