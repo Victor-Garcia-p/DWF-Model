@@ -1,22 +1,11 @@
 # TFG
 We will use this to explain the project. It needs to contain
 
-1)What are the "environmental variables" required and their value 
+Note: this is only a basic documentation as the project is not finished yet. All the explanations will be better develop at the end.
 
-Define an environment variable
+Use: The code aims to simulate the process of Deep Water Convection based on the example code from Oceananigans. 
 
-1)Press Windows+R
-2)Write "sysdm.cpl"
-3)go to "advanced-environment variables"
-4)Create a new variable. 
-name=PATH_TO_DATA
-variable value= where the "data" is 
+How to run the model?
+1-Run the "model definition" file, wit will create a .jld2 file that has all the conditions required to run the model (boundary, forcing and initial conditions).
 
-more info
-
-https://www.twilio.com/blog/2017/01/how-to-set-environment-variables.html
-
-
-2)How is the model splitted, and the data it requires
-
-3)Each file what contains
+2-Run the "model simulation". This will make the loop, according to the previous conditions. The output will be a .jld2 file but now with all the data.

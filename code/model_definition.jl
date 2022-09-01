@@ -27,8 +27,8 @@ include("forcing_conditions.jl")
 include("initial_conditions.jl")
 
 #define the name of the output files
-filename1 = "model_data_v20.jld2"
-filename2 = "model_data_v_20_sim.jld2" #a copy of the same file
+filename1 = "model_data_bouyancy.jld2"
+filename2 = "model_data_bouyancy_sim.jld2" #a copy of the same file
 
 
 # ## Buoyancy that depends on temperature and salinity
@@ -37,7 +37,7 @@ filename2 = "model_data_v_20_sim.jld2" #a copy of the same file
 
 buoyancy = SeawaterBuoyancy(equation_of_state=LinearEquationOfState(thermal_expansion = 2e-4,
                                                                     haline_contraction = 8e-4))
-
+#
 
 # ## Model instantiation
 
@@ -48,10 +48,10 @@ buoyancy = SeawaterBuoyancy(equation_of_state=LinearEquationOfState(thermal_expa
 # for large eddy simulation to model the effect of turbulent motions at
 # scales smaller than the grid scale that we cannot explicitly resolve.
 
-model = NonhydrostaticModel(; grid, buoyancy,
+model = NonhydrostaticModel(; grid, buoyancy=BuoyancyTracer(),
                             advection = UpwindBiasedFifthOrder(),
                             timestepper = :RungeKutta3,
-                            tracers = (:T, :S),
+                            tracers = (:T, :S, :b),
                             coriolis = FPlane(f=1e-4),
                             closure = AnisotropicMinimumDissipation(),
                             boundary_conditions = (u=u_bcs, T=T_bcs, S=S_bcs))
