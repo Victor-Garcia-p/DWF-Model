@@ -31,7 +31,7 @@ nothing
 t_20 = T_10.data[32, 16, :, 21]
 t_20_2 = T_20.data[32, 16, :, 21]
 
-#Calculate de standard desviation
+#Calculate de standard deviation
 σᵣ = std(t_20)
 σf = std(t_20_2)
 
@@ -43,8 +43,8 @@ Eⁱ = rmsd(t_20, t_20_2)
 
 ##MAKE THE GRAPH
 #0)Set some TEST values
-σᵣ = 1          #Standard desviation of a reference simulation
-σf = 1.16          #Standard desviation of a simulation "f"
+σᵣ = 1          #Standard deviation of a reference simulation
+σf = 1.16          #Standard deviation of a simulation "f"
 Eⁱ = 1.5            #Root-mean-square deviation, RMSD (0 to 1)
 R = 0.05           #Pearson correlation (0 to 1)
 

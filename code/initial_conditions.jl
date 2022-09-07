@@ -3,8 +3,7 @@
 #solved. The file purpose is just to define rather than to solve any equation.
 
 using Oceananigans
-using JLD2
-
+using Random
 
 # ## Initial conditions
 #
@@ -23,7 +22,6 @@ Tᵢ(x, y, z) = 20 + dTdz * z + dTdz * model.grid.Lz * 1e-6 * Ξ(z)
 uᵢ(x, y, z) = sqrt(abs(Qᵘ)) * 1e-3 * Ξ(z)
 
 #Reference salinity used to set the model (function !set)
-const S=35
-nothing
+S = 35
 
 #not working properly @save ("initial_conditions.jld2") Ξ(z)

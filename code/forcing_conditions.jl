@@ -3,7 +3,6 @@
 
 using Oceananigans
 using Oceananigans.Units: minute, minutes, hour
-using JLD2
 
 # ## Boundary conditions
 #

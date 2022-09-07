@@ -3,7 +3,6 @@
 #output: file jld2 with only the grid data. Saved in the path that the users specify
 
 using Oceananigans
-using JLD2
 
 #load the data, if the file is missing print a message
 filename="grid.jld2"
@@ -44,4 +43,4 @@ grid = RectilinearGrid(size = (32, 32, Nz),
                           z = z_faces)
 #save the grid into a jld2 file. it can be opened with @load
 
-@save path grid 
+#@save path grid 

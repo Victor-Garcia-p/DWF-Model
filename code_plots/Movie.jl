@@ -30,7 +30,7 @@ video_name = "Quick_test_DEF.mp4"
 time_series = (
     w = FieldTimeSeries(filepath_in, "w"),
     T = FieldTimeSeries(filepath_in, "T"),
-    S = FieldTimeSeries(filepath_in, "S"),
+    Sa = FieldTimeSeries(filepath_in, "S"),
     νₑ = FieldTimeSeries(filepath_in, "νₑ"),
 )
 
@@ -72,7 +72,7 @@ n = Observable(intro)
 
 wₙ = @lift interior(time_series.w[$n], :, 1, :)
 Tₙ = @lift interior(time_series.T[$n], :, 1, :)
-Sₙ = @lift interior(time_series.S[$n], :, 1, :)
+Sₙ = @lift interior(time_series.Sa[$n], :, 1, :)
 νₑₙ = @lift interior(time_series.νₑ[$n], :, 1, :)
 
 fig = Figure(resolution = (1000, 500))
@@ -103,7 +103,7 @@ hm_T = heatmap!(ax_T, xT, zT, Tₙ; colormap = :thermal, colorrange = Tlims)
 Colorbar(fig[2, 4], hm_T; label = "ᵒC")
 
 hm_S = heatmap!(ax_S, xT, zT, Sₙ; colormap = :haline, colorrange = Slims)
-Colorbar(fig[3, 2], hm_S; label = "g / kg")
+Colorbar(fig[3, 2], hm_Sa; label = "g / kg")
 
 hm_νₑ = heatmap!(ax_νₑ, xT, zT, νₑₙ; colormap = :thermal, colorrange = νₑlims)
 Colorbar(fig[3, 4], hm_νₑ; label = "m s⁻²")
