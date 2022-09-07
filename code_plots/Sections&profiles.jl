@@ -14,8 +14,7 @@ using GibbsSeaWater
 include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)
-names=["model_data_sim"]
-load_variable(names)    
+load_variable("model_data_3Dgrid_t40_sim")    
 
 ##
 #1)Make a temperature profile on two setted xy to compare values
@@ -36,18 +35,16 @@ display(fig)
 #2) Create a transversal section, x, in a fixed t
 #note: a meridional section would be the same fixing x and not the y
 
-Tn=reshape(T[1].data[:,:,1,41],(32,24))
+Tn=reshape(T.data[:,:,1,41],(32,32))
 
 fig = Figure(resolution=(1200, 800))
 
 axis_kwargs = (xlabel="x (m)",
-               ylabel="z (m)",
-               aspect = AxisAspect(grid.Lx/grid.Lz),
-               limits = ((0, grid.Lx), (-grid.Lz, 0)))
+               ylabel="z (m)")
 #
 
 ax_T  = Axis(fig[1,1]; title = "Temperature at time=X", axis_kwargs...)
-hm_T = heatmap!(ax_T,xT, zT,Tn,colormap = :thermal)
+hm_T = heatmap!(ax_T,xT, yT,Tn,colormap = :thermal)
 Colorbar(fig[1, 2], hm_T; label = "Temperature ᵒC")
 
 display(fig)
