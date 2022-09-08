@@ -34,10 +34,10 @@ buoyancy = SeawaterBuoyancy(equation_of_state=LinearEquationOfState(thermal_expa
 # for large eddy simulation to model the effect of turbulent motions at
 # scales smaller than the grid scale that we cannot explicitly resolve.
 
-model = NonhydrostaticModel(; grid, buoyancy=BuoyancyTracer(),
+model = NonhydrostaticModel(; grid, buoyancy,
                             advection = UpwindBiasedFifthOrder(),
                             timestepper = :RungeKutta3,
-                            tracers = (:T, :S, :b),
+                            tracers = (:T, :S),
                             coriolis = FPlane(f=1e-4),
                             closure = AnisotropicMinimumDissipation(),
                             boundary_conditions = (u=u_bcs, T=T_bcs, S=S_bcs))

@@ -9,8 +9,11 @@ function load_variable(name_defauld="model_data_sim")
 
     global Sa = FieldTimeSeries.(filepath_in, "S") 
     global T = FieldTimeSeries.(filepath_in, "T")
+    global νₑ = FieldTimeSeries(filepath_in, "νₑ")
+    global w = FieldTimeSeries(filepath_in, "w")
 
     global xT, yT, zT = nodes(T[1])
+    global xw, yw, zw = nodes(w[1])
 
     return nothing
 end

@@ -35,7 +35,7 @@ display(fig)
 #2) Create a transversal section, x, in a fixed t
 #note: a meridional section would be the same fixing x and not the y
 
-Tn=reshape(T.data[:,:,1,41],(32,32))
+Tn=reshape(Sa.data[:,:,24,41],(32,32))
 
 fig = Figure(resolution=(1200, 800))
 

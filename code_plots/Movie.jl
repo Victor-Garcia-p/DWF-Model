@@ -16,27 +16,20 @@ using Printf
 using Oceananigans.Units: minute, minutes, hour
 
 #2)Video of the data
-filepath_in = joinpath(@__DIR__, "..", "data", "model_data_bouyancy_sim.jld2")
+include("plots_functions.jl")
 
+#names of the files that we want to use (without .jld2)
+load_variable("model_data_3Dgrid_t40_sim")    
+
+#Name and path of thefile
 filepath_out = joinpath(@__DIR__, "..", "Plots_out", "Simulations")
-video_name = "Quick_test_DEF.mp4"
+video_name = "Defauld_horizontal_profile_bottom.mp4"
 
 # Turbulence visualization
 
 # We prepare for animating the flow by loading the data into
 # FieldTimeSeries and defining functions for computing colorbar limits.
 
-
-time_series = (
-    w = FieldTimeSeries(filepath_in, "w"),
-    T = FieldTimeSeries(filepath_in, "T"),
-    Sa = FieldTimeSeries(filepath_in, "S"),
-    νₑ = FieldTimeSeries(filepath_in, "νₑ"),
-)
-
-# Coordinate arrays
-xw, yw, zw = nodes(time_series.w)
-xT, yT, zT = nodes(time_series.T)
 
 """ Return colorbar levels equispaced between `(-clim, clim)` and encompassing the extrema of `c`. """
 function divergent_levels(c, clim, nlevels = 21)
@@ -49,7 +42,7 @@ function divergent_levels(c, clim, nlevels = 21)
 end
 
 """ Return colorbar levels equispaced between `clims` and encompassing the extrema of `c`."""
-function sequential_levels(c, clims, nlevels = 20)
+function sequential_levels(c, clims, nlevels = 21)
     levels = range(clims[1], stop = clims[2], length = nlevels)
     cmin, cmax = minimum(c), maximum(c)
     cmin < clims[1] && (levels = vcat([cmin], levels))
@@ -61,7 +54,7 @@ nothing # hide
 
 # We start the animation at ``t = 10minutes`` since things are pretty boring till then:
 
-times = time_series.w.times
+times = w.times
 intro = searchsortedfirst(times, 10minutes)
 
 # We are now ready to animate using Makie. We use Makie's `Observable` to animate
@@ -70,10 +63,10 @@ intro = searchsortedfirst(times, 10minutes)
 
 n = Observable(intro)
 
-wₙ = @lift interior(time_series.w[$n], :, 1, :)
-Tₙ = @lift interior(time_series.T[$n], :, 1, :)
-Sₙ = @lift interior(time_series.Sa[$n], :, 1, :)
-νₑₙ = @lift interior(time_series.νₑ[$n], :, 1, :)
+wₙ = @lift interior(w[$n], :, :, 21)
+Tₙ = @lift interior(T[$n], :, :, 21)
+Sₙ = @lift interior(Sa[$n], :, :, 21)
+νₑₙ = @lift interior(νₑ[$n], :, :, 21)
 
 fig = Figure(resolution = (1000, 500))
 
@@ -81,7 +74,7 @@ axis_kwargs = (
     xlabel = "x (m)",
     ylabel = "z (m)",
     aspect = AxisAspect(grid.Lx / grid.Lz),
-    limits = ((0, grid.Lx), (-grid.Lz, 0)),
+    limits = ((0, grid.Lx), (0, grid.Ly)),
 )
 
 ax_w = Axis(fig[2, 1]; title = "Vertical velocity", axis_kwargs...)
@@ -91,21 +84,25 @@ ax_νₑ = Axis(fig[3, 3]; title = "Eddy viscocity", axis_kwargs...)
 
 title = @lift @sprintf("t = %s", prettytime(times[$n]))
 
+#Note: The limits must be setted for depth>6 (if its the surface
+#makie can manage to change the limits automaticly). But for a depth of 7
+#We need to add as otherwise it will appear the
+#error "ERROR: ArgumentError: range step cannot be zero"
 wlims = (-0.05, 0.05)
-Tlims = (19.7, 19.99)
+Tlims = (19.9, 19.99)
 Slims = (35, 35.005)
 νₑlims = (1e-6, 5e-3)
 
-hm_w = heatmap!(ax_w, xw, zw, wₙ; colormap = :balance, colorrange = wlims)
+hm_w = heatmap!(ax_w, xw, yw, wₙ; colormap = :balance,colorrange = wlims)
 Colorbar(fig[2, 2], hm_w; label = "m s⁻¹")
 
-hm_T = heatmap!(ax_T, xT, zT, Tₙ; colormap = :thermal, colorrange = Tlims)
+hm_T = heatmap!(ax_T, xT, yT, Tₙ; colormap = :thermal,colorrange = Tlims)
 Colorbar(fig[2, 4], hm_T; label = "ᵒC")
 
-hm_S = heatmap!(ax_S, xT, zT, Sₙ; colormap = :haline, colorrange = Slims)
-Colorbar(fig[3, 2], hm_Sa; label = "g / kg")
+hm_S = heatmap!(ax_S, xT, yT, Sₙ; colormap = :haline,colorrange = Slims)
+Colorbar(fig[3, 2], hm_S; label = "g / kg")
 
-hm_νₑ = heatmap!(ax_νₑ, xT, zT, νₑₙ; colormap = :thermal, colorrange = νₑlims)
+hm_νₑ = heatmap!(ax_νₑ, xT, yT, νₑₙ; colormap = :thermal,colorrange = νₑlims)
 Colorbar(fig[3, 4], hm_νₑ; label = "m s⁻²")
 
 fig[1, 1:4] = Label(fig, title, textsize = 24, tellwidth = false)
