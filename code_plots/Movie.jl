@@ -22,7 +22,7 @@ include("plots_functions.jl")
 load_variable("model_data_3Dgrid_t40_sim")    
 
 #Name and path of thefile
-filepath_out = joinpath(@__DIR__, "..", "Plots_out", "Simulations")
+filepath_out = joinpath(@__DIR__, "..")
 video_name = "Defauld_horizontal_profile_bottom.mp4"
 
 # Turbulence visualization
