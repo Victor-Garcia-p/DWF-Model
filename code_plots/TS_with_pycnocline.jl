@@ -1,3 +1,6 @@
+#
+a=7
+
 #=
 Info: The file contains all the script to create TS diagram with
 picnoclines. Although the picnoclines are coded it
@@ -19,7 +22,7 @@ include("plots_functions.jl")
 #Load files
 names=["model_data_sim"]
 load_variable(names) 
-   
+
 ##
 #Create a TS diagrame
 
@@ -27,7 +30,7 @@ TS = Figure(resolution=(1200, 800))
 ax = Axis(TS[1, 1], ylabel = "Temperature(°C)", xlabel = "Salinity(psu)")
 ax.title="Diagrame TS"
 
-sca1=scatter!(ax, Sa[1].data[32,16,:,41], T[1].data[32,16,:,41],color=zT,markersize = 20,colormap=:thermal)
+sca1=scatter!(ax, Sa[1].data[10,16,:,41], T[1].data[10,16,:,41],color=zT,markersize = 20,colormap=:thermal)
 Colorbar(TS[1, 2], limits = (-30,0),ticks = -30:6:0,
 colormap = cgrad(:thermal, 5, categorical = true), size = 25,
 label = "Depth(m)")
@@ -92,7 +95,7 @@ for (i, p) in enumerate(segments)
     # the segments are separated by NaN, which signals that a new contour starts
     #i-50 indicates that each point will be separated 50 points
     if isnan(p)
-        push!(beginnings, segments[i-50])
+        push!(beginnings, segments[i-20])
     end
 end
 
@@ -104,9 +107,9 @@ coords_unchanged=hcat(beginnings...)'
 coords=convert(Matrix, coords_unchanged)
 
 #Loop to locate the text
-max=size(coords,1)
+maxim=size(coords,1)
 
-for i in 1:max
+for i in 1:maxim
     text!("$(round(isopicnals_name[i];digits=2))",position =(coords[i,1],coords[i,2]),  
     align = (:center, :center))
 end
