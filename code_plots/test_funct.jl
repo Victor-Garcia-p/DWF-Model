@@ -80,9 +80,9 @@ function range(variable,sparcing)
     maxi=maximum(variable)
     mini=minimum(variable)
 
-    interval=round(((maxi-mini)/sparcing);digits=3)
+    interval=round(((maxi-mini)/sparcing);digits=4)
 
-    T_interest=round(mini;digits=3):interval:round(maxi;digits=3)
+    T_interest=round(mini;digits=4):interval:round(maxi;digits=4)
     return convert(StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64},
     T_interest)
 end

@@ -11,7 +11,7 @@ using CairoMakie
 using Oceananigans
 using GibbsSeaWater
 
-include("plots_functions.jl")
+include("test_funct.jl")
 
 #names of the files that we want to use (without .jld2)
 load_variable("model_data_3Dgrid_t40_sim")    
@@ -35,7 +35,10 @@ display(fig)
 #2) Create a transversal section, x, in a fixed t
 #note: a meridional section would be the same fixing x and not the y
 
-Tn=reshape(Sa[1].data[:,:,24,41],(32,32))
+Tn=reshape(T.data[:,:,1,41],(32,32))
+Sn=reshape(Sa.data[:,:,1,41],(32,32))
+
+σ=gsw_sigma0.(Sn,Tn)
 
 fig = Figure(resolution=(1200, 800))
 
@@ -46,6 +49,10 @@ axis_kwargs = (xlabel="x (m)",
 ax_T  = Axis(fig[1,1]; title = "Temperature at time=X", axis_kwargs...)
 hm_T = heatmap!(ax_T,xT, yT,Tn,colormap = :thermal)
 Colorbar(fig[1, 2], hm_T; label = "Temperature ᵒC")
+
+#problems with rg
+rg=range(σ,7)
+isovariable_test(ax_T,xT, yT,σ,24.71:0.001:24.73)
 
 display(fig)
 

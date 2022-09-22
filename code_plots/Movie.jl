@@ -23,7 +23,7 @@ load_variable("model_data_3Dgrid_t40_sim")
 
 #Name and path of thefile
 filepath_out = joinpath(@__DIR__, "..", "Plots_out", "Simulations")
-video_name = "Defauld_horizontal_profile_bottom.mp4"
+video_name = "Defauld_density_horizontal_profile_bottom.mp4"
 
 # Turbulence visualization
 
@@ -63,10 +63,11 @@ intro = searchsortedfirst(times, 10minutes)
 
 n = Observable(intro)
 
-wₙ = @lift interior(w[$n], :, :, 21)
-Tₙ = @lift interior(T[$n], :, :, 21)
-Sₙ = @lift interior(Sa[$n], :, :, 21)
-νₑₙ = @lift interior(νₑ[$n], :, :, 21)
+#change the last value to 1 to make horizontal plots
+wₙ = @lift interior(w[$n], :, 1, :)
+Tₙ = @lift interior(T[$n], :, 1, :)
+Sₙ = @lift interior(Sa[$n], :, 1, :)
+νₑₙ = @lift interior(νₑ[$n], :, 1, :)
 
 fig = Figure(resolution = (1000, 500))
 
@@ -84,6 +85,7 @@ ax_νₑ = Axis(fig[3, 3]; title = "Eddy viscocity", axis_kwargs...)
 
 title = @lift @sprintf("t = %s", prettytime(times[$n]))
 
+#=
 #Note: The limits must be setted for depth>6 (if its the surface
 #makie can manage to change the limits automaticly). But for a depth of 7
 #We need to add as otherwise it will appear the
@@ -92,17 +94,18 @@ wlims = (-0.05, 0.05)
 Tlims = (19.9, 19.99)
 Slims = (35, 35.005)
 νₑlims = (1e-6, 5e-3)
+=#
 
-hm_w = heatmap!(ax_w, xw, yw, wₙ; colormap = :balance,colorrange = wlims)
+hm_w = heatmap!(ax_w, xw, yw, wₙ; colormap = :balance)
 Colorbar(fig[2, 2], hm_w; label = "m s⁻¹")
 
-hm_T = heatmap!(ax_T, xT, yT, Tₙ; colormap = :thermal,colorrange = Tlims)
+hm_T = heatmap!(ax_T, xT, yT, Tₙ; colormap = :thermal)
 Colorbar(fig[2, 4], hm_T; label = "ᵒC")
 
-hm_S = heatmap!(ax_S, xT, yT, Sₙ; colormap = :haline,colorrange = Slims)
+hm_S = heatmap!(ax_S, xT, yT, Sₙ; colormap = :haline)
 Colorbar(fig[3, 2], hm_S; label = "g / kg")
 
-hm_νₑ = heatmap!(ax_νₑ, xT, yT, νₑₙ; colormap = :thermal,colorrange = νₑlims)
+hm_νₑ = heatmap!(ax_νₑ, xT, yT, νₑₙ; colormap = :thermal)
 Colorbar(fig[3, 4], hm_νₑ; label = "m s⁻²")
 
 fig[1, 1:4] = Label(fig, title, textsize = 24, tellwidth = false)
@@ -119,6 +122,4 @@ record(fig, joinpath(filepath_out, video_name), frames, framerate = 8) do i
     n[] = i
 end
 nothing #hide
-
-# ![](ocean_wind_mixing_and_convection.mp4)
 
