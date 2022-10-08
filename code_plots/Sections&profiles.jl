@@ -7,11 +7,14 @@ Output: A video (mp4)
 References: Script entirely from Oceananigans example, "ocean_wind_mixing_and_convection"
 
 =#
+using DrWatson
 using CairoMakie
 using Oceananigans
 using GibbsSeaWater
 
-include("test_funct.jl")
+#load the local environment not the global which is defauld in Julia
+@quickactivate "DWC_model" 
+include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)
 load_variable("model_data_3Dgrid_t40_sim")    
@@ -38,7 +41,7 @@ display(fig)
 Tn=reshape(T.data[:,:,1,41],(32,32))
 Sn=reshape(Sa.data[:,:,1,41],(32,32))
 
-σ=gsw_sigma0.(Sn,Tn)
+σ=gsw_sigma0.(Sa.data[:,:,:,41],T.data[:,:,:,41])
 
 fig = Figure(resolution=(1200, 800))
 
@@ -51,8 +54,8 @@ hm_T = heatmap!(ax_T,xT, yT,Tn,colormap = :thermal)
 Colorbar(fig[1, 2], hm_T; label = "Temperature ᵒC")
 
 #problems with rg
-rg=range(σ,7)
-isovariable_test(ax_T,xT, yT,σ,24.71:0.001:24.73)
+#rg=range(σ,7)
+#isovariable_test(ax_T,xT, yT,σ,24.71:0.001:24.73)
 
 display(fig)
 

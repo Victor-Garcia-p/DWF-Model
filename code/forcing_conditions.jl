@@ -4,6 +4,9 @@
 using Oceananigans
 using Oceananigans.Units: minute, minutes, hour
 
+#load forcing constants
+include("constants.jl")
+
 # ## Boundary conditions
 #
 # We calculate the surface temperature flux associated with surface heating of
@@ -18,7 +21,7 @@ Qᵀ = Qʰ / (ρₒ * cᴾ) # K m s⁻¹, surface _temperature_ flux
 # Finally, we impose a temperature gradient `dTdz` both initially and at the
 # bottom of the domain, culminating in the boundary conditions on temperature,
 
-const dTdz = 0.01 # K m⁻¹
+#const dTdz = 0.01 # K m⁻¹
 
 T_bcs = FieldBoundaryConditions(top = FluxBoundaryCondition(Qᵀ),
                                 bottom = GradientBoundaryCondition(dTdz))
@@ -32,7 +35,7 @@ T_bcs = FieldBoundaryConditions(top = FluxBoundaryCondition(Qᵀ),
 # to estimate the kinematic stress (that is, stress divided by density) exerted
 # by the wind on the ocean:
 
-const u₁₀ = 10    # m s⁻¹, average wind velocity 10 meters above the ocean
+#const u₁₀ = 10    # m s⁻¹, average wind velocity 10 meters above the ocean
 const cᴰ = 2.5e-3 # dimensionless drag coefficient
 const ρₐ = 1.225  # kg m⁻³, average density of air at sea-level
 

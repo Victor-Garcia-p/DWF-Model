@@ -44,9 +44,9 @@ Eⁱ = rmsd(t_20, t_20_2)
 ##MAKE THE GRAPH
 #0)Set some TEST values
 σᵣ = 1          #Standard deviation of a reference simulation
-σf = 1.16          #Standard deviation of a simulation "f"
+σf = 1.5          #Standard deviation of a simulation "f"
 Eⁱ = 1.5            #Root-mean-square deviation, RMSD (0 to 1)
-R = 0.05           #Pearson correlation (0 to 1)
+
 
 #0.1)Convert values into axial coordinates (xy) using cosine theorem
 ϕ = acos((σf^2 + σᵣ^2 - Eⁱ^2) / (2 * σf * σᵣ))

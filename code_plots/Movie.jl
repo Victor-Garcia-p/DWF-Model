@@ -64,10 +64,10 @@ intro = searchsortedfirst(times, 10minutes)
 n = Observable(intro)
 
 #change the last value to 1 to make horizontal plots
-wₙ = @lift interior(w[$n], :, 1, :)
-Tₙ = @lift interior(T[$n], :, 1, :)
-Sₙ = @lift interior(Sa[$n], :, 1, :)
-νₑₙ = @lift interior(νₑ[$n], :, 1, :)
+wₙ = @lift interior(w[$n], :, 2, :)
+Tₙ = @lift interior(T[$n], :, 2, :)
+Sₙ = @lift interior(Sa[$n], :, 2, :)
+νₑₙ = @lift interior(νₑ[$n], :, 2, :)
 
 fig = Figure(resolution = (1000, 500))
 

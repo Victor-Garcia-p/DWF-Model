@@ -5,6 +5,9 @@
 using Oceananigans
 using Random
 
+#load forcing constants
+include("constants.jl")
+
 # ## Initial conditions
 #
 # Our initial condition for temperature consists of a linear stratification superposed with
@@ -22,6 +25,6 @@ Tᵢ(x, y, z) = 20 + dTdz * z + dTdz * model.grid.Lz * 1e-6 * Ξ(z)
 uᵢ(x, y, z) = sqrt(abs(Qᵘ)) * 1e-3 * Ξ(z)
 
 #Reference salinity used to set the model (function !set)
-S = 35
+#S = 35
 
 #not working properly @save ("initial_conditions.jld2") Ξ(z)
