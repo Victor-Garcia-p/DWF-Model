@@ -5,7 +5,7 @@ using GibbsSeaWater
 
 #load the local environment not the global which is defauld in Julia
 @quickactivate "DWC_model" 
-include("test_funct.jl")
+include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)
 load_variable("model_data_3Dgrid_t40_sim")  
