@@ -18,6 +18,21 @@ function load_variable(name_defauld="model_data_sim")
     return nothing
 end
 
+#This function loads a variable in a setted location (ex: position x,y of
+#the grid). It creates a new variable called "T_plot" with all
+#the output of the function
+function load_AOI(x,y,z,t,first=1,last=2)
+    global T_plot=Any[]
+    for i in first:last
+        T_interest=T[i].data[x,y,z,t]
+    
+        #fig = Figure(resolution=(1200, 800))
+        #ax = Axis(fig[1, 1], ylabel = "Depth (m)", xlabel = "Temperature(C)")
+        #sca=scatter!(ax, T_interest[1], zT)
+        push!(T_plot,T_interest)
+    end
+end
+
 #function to add contours with the name above to create isopicnals, isotermals...
 function isovariable_test(ax,S_trans_1,T_trans_1,σ,isopicnals_range=23:0.5:26)
     #Now that we now that the density is correct we can add the isopicnals
@@ -95,4 +110,21 @@ end
 
 function SI(σ,Z=σ[end])
     sum(σ[Z].-σ)
+end
+
+#Funtion to create the name of the simulation that we want to plot
+function name_concatenation(first_simulation,last_simulation)
+    for i in first_simulation:last_simulation
+        #Define if the data has 2d o 3d dimensions
+        if sizeof(dimension)==0
+            dim="3D"
+        else
+            dim="2D"
+        end
+
+        #Create the name of the file
+        params= name(u₁₀[i],dTdz[i],S[i],dim,end_time[i])
+        file=savename("DWF_t",params)
+        push!(files,file)
+    end
 end
