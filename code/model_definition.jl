@@ -11,6 +11,7 @@ using DrWatson
 include("grids_generation.jl")
 include("forcing_conditions.jl")
 include("initial_conditions.jl")
+include("constants.jl")
 
 #define the name of the output files and the path
 path = joinpath(@__DIR__, "..", "data")
@@ -119,4 +120,4 @@ simulation.output_writers[:slices] =
                      overwrite_existing = false)
 nothing
 
-#run!(simulation)
+run!(simulation)
