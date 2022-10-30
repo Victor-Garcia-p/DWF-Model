@@ -99,14 +99,7 @@ eddy_viscosity = (; νₑ = model.diffusivity_fields.νₑ)
 
 ##Add the parameters, such as initial conditions, to the name of the file (DrWatson)
 
-struct names
-    u₁₀
-    dTdz
-    S
-    dim
-    run
-end
-params= names(u₁₀,dTdz,S,"3D",end_time)
+params= name(u₁₀,dTdz,S,"3D",end_time)
 
 filename1=savename("DWF",params,"jld2")
 
@@ -120,4 +113,4 @@ simulation.output_writers[:slices] =
                      overwrite_existing = false)
 nothing
 
-run!(simulation)
+#run!(simulation)

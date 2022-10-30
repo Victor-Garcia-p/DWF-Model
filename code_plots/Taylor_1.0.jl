@@ -35,29 +35,26 @@ t_20_2 = T_20.data[32, 16, :, 21]
 σᵣ = std(t_20)
 σf = std(t_20_2)
 
-#Calculate the Pearson coeficient
-R = cor(t_20, t_20_2)
-
 #Calculate the root-mean-square deviation, RMSD
 Eⁱ = rmsd(t_20, t_20_2)
 
 ##MAKE THE GRAPH
 #0)Set some TEST values
-σᵣ = 1          #Standard deviation of a reference simulation
-σf = 1.5          #Standard deviation of a simulation "f"
-Eⁱ = 1.5            #Root-mean-square deviation, RMSD (0 to 1)
-
+σᵣ = 5.5          #Standard deviation of a reference simulation
+σf = 6.5          #Standard deviation of a simulation "f"
+Eⁱ = 5            #Root-mean-square deviation, RMSD (0 to 1)
+P= 0.7
 
 #0.1)Convert values into axial coordinates (xy) using cosine theorem
-ϕ = acos((σf^2 + σᵣ^2 - Eⁱ^2) / (2 * σf * σᵣ))
+#ϕ = acos((σf^2 + σᵣ^2 - Eⁱ^2) / (2 * σf * σᵣ))
 
-x = [σᵣ, σf * cos(ϕ)]
-y = [0, σf * sin(ϕ)]
+x = [σᵣ, σf * P]
+y = [0, σf * sin(acos(P))]
 
 #1)Set the dimensions of the figure
-limits = [-0.2, 2, -0.15, 2]   #limits of the box that contains the plot (invisible)
-ticks = 0:0.5:2                 #x&y error ticks
-R = 1.6                         #Radium of the sphere 
+limits = [-0.2, 10, -0.15, 10]   #limits of the box that contains the plot (invisible)
+ticks = 0:1:8                 #x&y error ticks
+R = 8                         #Radium of the sphere 
 
 f = Figure()
 ax = Axis(
@@ -71,11 +68,18 @@ ax = Axis(
 limits!(ax, BBox(limits[1], limits[2], limits[3], limits[4]))
 
 #2)Make the Eⁱ contours, based on coordinates of reference
-rs_2 = range(0, R, length = 5)
+#lengh will define how many contours does the figure have
+rs_2 = range(0, R, length = 6)
 
 for r in rs_2
     lines!(Circle(Point2f(x[1], y[1]), r), color = :blue)
 end
+
+#Create the name templates in each line of RMSD
+#Not done yet
+#=
+range_names=collect(rs_2)
+=#
 
 #3)Create the radial lines, the values are the Correlation values 
 #that are more interesting (ex: correlation of 1, 0.99 or 0)
@@ -149,12 +153,10 @@ for r in rs
 end
 
 #7)Add text to the radials (script adapted from https://github.com/JuliaPlots/Makie.jl/issues/521)
-rborder = R
-
 for θ in α[1:end]
-    offset = rborder * 0.1
-    xpos = (rborder + offset) * cos(θ)
-    ypos = (rborder + offset) * sin(θ)
+    offset = R * 0.1
+    xpos = (R + offset) * cos(θ)
+    ypos = (R + offset) * sin(θ)
     text!("$(round(cos.(θ);digits=2))", position = (xpos, ypos), align = (:center, :center))
 end
 

@@ -26,10 +26,10 @@ name_concatenation(1,10)
 
 load_variable(files)    
 
-##
 #1)Make a comparative profile of both simulations at the same location
-load_AOI(32,2,:,41,1,10) #"T_plot" variable is defined with all the simulations
+load_AOI(32,2,:,41,1,10,"T") #"T_plot" variable is defined with all the simulations
 
+##
 fig = Figure(resolution=(1200, 800))
 ax = Axis(fig[1, 1], ylabel = "Profunditat (m)", xlabel = "Temperatura(C)",
 xticks = 19.6:0.05:20,

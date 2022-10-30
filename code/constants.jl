@@ -29,7 +29,6 @@ dTdz=filling(dTdz,u₁₀)
 end_time=filling(end_time,u₁₀)
 dimension=filling(dimension,u₁₀)
 
-#Structure to make the name of the file
 struct name
     u₁₀
     dTdz
@@ -37,4 +36,3 @@ struct name
     dim
     run
 end
-

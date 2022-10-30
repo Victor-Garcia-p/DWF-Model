@@ -19,17 +19,35 @@ function load_variable(name_defauld="model_data_sim")
 end
 
 #This function loads a variable in a setted location (ex: position x,y of
-#the grid). It creates a new variable called "T_plot" with all
+#the grid). It creates a new variable called "T_plot", "S_plot" or "w_plot" (depending of the name) with all
 #the output of the function
-function load_AOI(x,y,z,t,first=1,last=2)
-    global T_plot=Any[]
-    for i in first:last
+function load_AOI(x,y,z,t,first=1,last=2,variable="T")
+    if variable=="T"
+        global T_plot=Any[]
+        for i in first:last
         T_interest=T[i].data[x,y,z,t]
     
-        #fig = Figure(resolution=(1200, 800))
-        #ax = Axis(fig[1, 1], ylabel = "Depth (m)", xlabel = "Temperature(C)")
-        #sca=scatter!(ax, T_interest[1], zT)
         push!(T_plot,T_interest)
+        end
+    end
+
+    if variable=="S"
+        global S_plot=Any[]
+        for i in first:last
+        S_interest=Sa[i].data[x,y,z,t]
+    
+        push!(S_plot,S_interest)
+        end
+    end
+
+    
+    if variable=="w"
+        global w_plot=Any[]
+        for i in first:last
+        w_interest=w[i].data[x,y,z,t]
+    
+        push!(w_plot,w_interest)
+        end
     end
 end
 
@@ -110,6 +128,15 @@ end
 
 function SI(σ,Z=σ[end])
     sum(σ[Z].-σ)
+end
+
+#Structure to make the name of the file
+struct name
+    u₁₀
+    dTdz
+    S
+    dim
+    run
 end
 
 #Funtion to create the name of the simulation that we want to plot
