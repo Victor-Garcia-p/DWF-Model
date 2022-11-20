@@ -21,16 +21,20 @@ load_variable("model_data_3Dgrid_t40_sim")
 
 ##
 #1)Make a temperature profile on two setted xy to compare values
-t_0=T[1].data[32,16,:,1]
-t_40=T[1].data[32,16,:,end]
-t_40_2=T[1].data[20,16,:,end]
+t_0=T[1].data[32,2,:,1]
+#t_40=T[1].data[32,16,:,end]
+#t_40_2=T[1].data[20,16,:,end]
 
 fig = Figure(resolution=(1200, 800))
-ax = Axis(fig[1, 1], ylabel = "Depth (m)", xlabel = "Temperature(C)")
-sca1=scatter!(ax, t_40, zT)
-sca2=scatter!(ax, t_40_2, zT)
+ax = Axis(fig[1, 1], ylabel = "Depth (m)", xlabel = "Temperature(C)",
+title = "Secció a t=40min variant la magnitud del vent (=condicions inicials)")
+
+sca1=scatter!(ax, T_plot[5], zT)
+sca2=scatter!(ax, T_plot[10], zT)
 sca0=linesegments!(ax, t_0, zT,linewidth = 0.3)
-Legend(fig[1, 2],[sca0,sca1,sca2],["initial","pos1","pos2"])
+
+axislegend(ax,[sca0,sca1,sca2],["Initial situation","5","10"],"Modul velocitat vent (m/s)",
+position = :rb,orientation = :horizontal)
 
 display(fig)
 

@@ -17,7 +17,7 @@ using CairoMakie
 using StatsBase
 using Oceananigans
 
-##
+#=
 #Load simulation files to plot
 filepath_in = joinpath(@__DIR__, "..", "data", "model_data_v_10_sim.jld2")
 filepath_in_2 = joinpath(@__DIR__, "..", "data", "model_data_v_20_sim.jld2")
@@ -37,12 +37,13 @@ t_20_2 = T_20.data[32, 16, :, 21]
 
 #Calculate the root-mean-square deviation, RMSD
 Eⁱ = rmsd(t_20, t_20_2)
+=#
 
 ##MAKE THE GRAPH
 #0)Set some TEST values
-σᵣ = 5.5          #Standard deviation of a reference simulation
-σf = 6.5          #Standard deviation of a simulation "f"
-#Eⁱ = 1.6*1            #Root-mean-square deviation, RMSD (0 to 1)
+σᵣ = 5.5            #Standard deviation of a reference simulation
+σf = 7              #Standard deviation of a simulation "f"
+#Eⁱ = 1.6*1         #Root-mean-square deviation, RMSD (0 to 1)
 P= 0.7
 
 #0.1)Convert values into axial coordinates (xy) using cosine theorem
@@ -53,8 +54,8 @@ y = [0, σf * sin(acos(P))]
 
 #1)Set the dimensions of the figure
 limits = [-0.2, 10, -0.15, 10]   #limits of the box that contains the plot (invisible)
-ticks = 0:1:8                 #x&y error ticks
-R = 8                         #Radium of the sphere 
+ticks = 0:1:8                   #x&y error ticks
+R = 8                           #Radium of the sphere 
 
 f = Figure()
 ax = Axis(

@@ -27,7 +27,7 @@ name_concatenation(1,10)
 load_variable(files)    
 
 #1)Make a comparative profile of both simulations at the same location
-load_AOI(32,2,:,41,1,10,"T") #"T_plot" variable is defined with all the simulations
+load_AOI(32,2,:,41,1,10,"S") #"T_plot" variable is defined with all the simulations
 
 ##
 fig = Figure(resolution=(1200, 800))
@@ -42,27 +42,5 @@ sca5=scatter!(ax, T_plot[10], zT,markersize = 13)
 
 axislegend(ax,[sca1,sca3,sca5],["1","5","10"],"Modul velocitat vent (m/s)",
 position = :rb,orientation = :horizontal)
-display(fig)
-
-
-
-
-
-##
-
-
-
-for j in 1:2
-    fig = Figure(resolution=(1200, 800))
-    ax = Axis(fig[1, 1], ylabel = "Depth (m)", xlabel = "Temperature(C)")
-    sca=scatter!(ax, T_plot[j], zT)
-    push!(sca_test,sca)
-end
-
-#fig = Figure(resolution=(1200, 800))
-#ax = Axis(fig[1, 1], ylabel = "Depth (m)", xlabel = "Temperature(C)")
-sca_test
-Legend(fig[1, 2],[sca_test[1],sca_test[2]],["v_10","v_20"])
-
 display(fig)
 

@@ -101,8 +101,8 @@ function TS_σ(T,S)
 
     #Calculate density matrix. This is done using the properties of the multiplication
     #of matrix to achieve the correct dimensions of the matrix.
-    Column_1=fill(1, (1,length(T_interest)))
-    Row_1=fill(1,(length(S_interest), 1))
+    Column_1=fill(1, (1,length(T)))
+    Row_1=fill(1,(length(S), 1))
 
     return σ=reverse(transpose(gsw_sigma0.(Row_1*S_trans_2,T_trans_2*Column_1)),dims = 2)
 end

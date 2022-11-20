@@ -30,13 +30,16 @@ TS = Figure(resolution=(1200, 800))
 ax = Axis(TS[1, 1], ylabel = "Temperature(°C)", xlabel = "Salinity(psu)")
 ax.title="Diagrame TS"
 
-sca1=scatter!(ax, Sa[1].data[10,16,:,41], T[1].data[10,16,:,41],color=zT,markersize = 20,colormap=:thermal)
+sca1=scatter!(ax, S_plot[7], T_plot[7],color=zT,markersize = 20,colormap=:thermal)
+sca2=scatter!(ax, S_plot[10], T_plot[10],color=zT,markersize = 20,colormap=:thermal,marker = :dtriangle)
 Colorbar(TS[1, 2], limits = (-30,0),ticks = -30:6:0,
 colormap = cgrad(:thermal, 5, categorical = true), size = 25,
 label = "Depth(m)")
 
-display(TS)
+axislegend(ax,[sca1,sca2],["7","10"],"Modul velocitat vent (m/s)",
+position = :rb,orientation = :horizontal)
 
+display(TS)
 
 ##Example to add the isopicnals
 ##it needs to be converted into a function to be added into any plots
