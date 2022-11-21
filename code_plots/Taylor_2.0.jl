@@ -78,6 +78,9 @@ for r in rs_2
     lines!(Circle(Point2f(x[1], y[1]), r), color = :blue)
 end
 
+#=
+#THIS PART OF TEXT DOES NOT WORK PROPERLY
+
 #2.1)Create the name templates in each line of RMSD
 
 #2.1.1)Create some white points above the Eⁱ contour to leave space
@@ -87,7 +90,7 @@ end
 #We are using cosine theorem to set the position of the points
 for n in 1:divisions-1
     Eⁱ=rs_2[2]*n
-    ϕi = acos((σf^2 + σᵣ^2 - Eⁱ^2) / (2 * σf * σᵣ))
+    ϕi = acos((abs(σf^2 + σᵣ^2 - Eⁱ^2)) / (2 * σf * σᵣ))
     push!(ϕ,ϕi)
 end
 
@@ -106,6 +109,7 @@ for i in 1:t
     text!("$(round(range_name[i];digits=2))",position =(positions[1][i],positions[2][i]),  
     align = (:center, :center))
 end
+=#
 
 #3)Create the radial lines, the values are the Correlation values 
 #that are more interesting (ex: correlation of 1, 0.99 or 0)
