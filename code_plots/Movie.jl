@@ -19,11 +19,11 @@ using Oceananigans.Units: minute, minutes, hour
 include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)
-load_variable("model_data_3Dgrid_t40_sim")    
+load_variable("DWF_t_S=35_dTdz=0.01_dim=2D_run=300.0_u₁₀=0")    
 
 #Name and path of thefile
 filepath_out = joinpath(@__DIR__, "..", "Plots_out", "Simulations")
-video_name = "Defauld_density_horizontal_profile_bottom.mp4"
+video_name = "Test.mp4"
 
 # Turbulence visualization
 
@@ -55,7 +55,7 @@ nothing # hide
 # We start the animation at ``t = 10minutes`` since things are pretty boring till then:
 
 times = w.times
-intro = searchsortedfirst(times, 10minutes)
+intro = searchsortedfirst(times, 1minutes)
 
 # We are now ready to animate using Makie. We use Makie's `Observable` to animate
 # the data. To dive into how `Observable`s work we refer to
@@ -64,10 +64,10 @@ intro = searchsortedfirst(times, 10minutes)
 n = Observable(intro)
 
 #change the last value to 1 to make horizontal plots
-wₙ = @lift interior(w[$n], :, 2, :)
-Tₙ = @lift interior(T[$n], :, 2, :)
-Sₙ = @lift interior(Sa[$n], :, 2, :)
-νₑₙ = @lift interior(νₑ[$n], :, 2, :)
+wₙ = @lift interior(w[$n], :, 1, :)
+Tₙ = @lift interior(T[$n], :, 1, :)
+Sₙ = @lift interior(Sa[$n], :, 1, :)
+νₑₙ = @lift interior(νₑ[$n], :, 1, :)
 
 fig = Figure(resolution = (1000, 500))
 
@@ -75,7 +75,7 @@ axis_kwargs = (
     xlabel = "x (m)",
     ylabel = "z (m)",
     aspect = AxisAspect(grid.Lx / grid.Lz),
-    limits = ((0, grid.Lx), (0, grid.Ly)),
+    limits = ((0, grid.Lx), (-grid.Lz,0)),
 )
 
 ax_w = Axis(fig[2, 1]; title = "Vertical velocity", axis_kwargs...)
@@ -96,16 +96,16 @@ Slims = (35, 35.005)
 νₑlims = (1e-6, 5e-3)
 =#
 
-hm_w = heatmap!(ax_w, xw, yw, wₙ; colormap = :balance)
+hm_w = heatmap!(ax_w, xw, zw, wₙ; colormap = :balance)
 Colorbar(fig[2, 2], hm_w; label = "m s⁻¹")
 
-hm_T = heatmap!(ax_T, xT, yT, Tₙ; colormap = :thermal)
+hm_T = heatmap!(ax_T, xT, zT, Tₙ; colormap = :thermal)
 Colorbar(fig[2, 4], hm_T; label = "ᵒC")
 
-hm_S = heatmap!(ax_S, xT, yT, Sₙ; colormap = :haline)
+hm_S = heatmap!(ax_S, xT, zT, Sₙ; colormap = :haline)
 Colorbar(fig[3, 2], hm_S; label = "g / kg")
 
-hm_νₑ = heatmap!(ax_νₑ, xT, yT, νₑₙ; colormap = :thermal)
+hm_νₑ = heatmap!(ax_νₑ, xT, zT, νₑₙ; colormap = :thermal)
 Colorbar(fig[3, 4], hm_νₑ; label = "m s⁻²")
 
 fig[1, 1:4] = Label(fig, title, textsize = 24, tellwidth = false)
