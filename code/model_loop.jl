@@ -20,13 +20,18 @@ function DWF(u₁₀,dTdz,S,end_time,dimensions,names,run="false")
     Ξ(z) = randn() * z / model.grid.Lz * (1 + z / model.grid.Lz) # noise
 
     ## Temperature initial condition: a stable density gradient with random noise superposed.
-    Tᵢ(x, y, z) = 20 + dTdz * z + dTdz * model.grid.Lz * 1e-6 * Ξ(z)
-
+    Tᵢ(x, y, z) = z >= -SW_lim ? SW[2] :
+                z >= -LIW_lim ? LIW[2] : DW[2] 
+    #
+    
     ## Velocity initial condition: random noise scaled by the friction velocity.
     uᵢ(x, y, z) = sqrt(abs(Qᵘ)) * 1e-3 * Ξ(z)
 
     #Reference salinity used to set the model (function !set)
-    #S = 35
+    #=
+    Sᵢ(x, y, z) = z <= SW_lim ? SW[1] + dTdz * z + dTdz * model.grid.Lz * 1e-6 * Ξ(z) :
+                z <= LIW_lim ? LIW[1] + dTdz * z + dTdz * model.grid.Lz * 1e-6 * Ξ(z) : DW[1] + dTdz * z + dTdz * model.grid.Lz * 1e-6 * Ξ(z)
+    =#
 
     # ## Boundary conditions
     #
@@ -186,7 +191,7 @@ function DWF(u₁₀,dTdz,S,end_time,dimensions,names,run="false")
                         filename = joinpath(path,filename1),
                         indices = dimensions,
                         schedule = TimeInterval(1minute),
-                        overwrite_existing = false)
+                        overwrite_existing = true)
     #
     if run==true
         return run!(simulation)
@@ -199,7 +204,3 @@ end
 for i=1:10
     DWF(u₁₀[i],dTdz[i],S[i],end_time[i],dimension[i],name,true)
 end
-
-
-
-

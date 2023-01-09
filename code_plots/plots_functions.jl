@@ -151,7 +151,7 @@ function name_concatenation(first_simulation,last_simulation)
 
         #Create the name of the file
         params= name(u₁₀[i],dTdz[i],S[i],dim,end_time[i])
-        file=savename("DWF_t",params)
+        file=savename("DWF_v2",params)
         push!(files,file)
     end
 end
