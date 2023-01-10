@@ -1,15 +1,9 @@
-#use: this file contains all the functions required to create the grid
-#and also the parameters like stretching or refinement
-#output: file jld2 with only the grid data. Saved in the path that the users specify
+#=
+Info: This file is the grid of the model, where all the operation will be taking place
+=#
 
 using Oceananigans
 
-#load the data, if the file is missing print a message
-filename="grid.jld2"
-path = joinpath(@__DIR__, "..", "data", filename)
-
-# ## The grid
-#
 # We use 32²×24 grid points with 2 m grid spacing in the horizontal and
 # varying spacing in the vertical, with higher resolution closer to the
 # surface. Here we use a stretching function for the vertical nodes that
@@ -41,6 +35,4 @@ grid = RectilinearGrid(size = (32, 32, Nz),
                           x = (0, 64),
                           y = (0, 64),
                           z = z_faces)
-#save the grid into a jld2 file. it can be opened with @load
-
-#@save path grid 
+#

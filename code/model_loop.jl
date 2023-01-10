@@ -1,3 +1,13 @@
+#=
+Info: This file contains all the model (function DWF). It reads "constants" file and uses them as arguments to
+make the data of the simulation, returned at (.jld2).
+
+The loop is used to make several simulations if there are defined several constants (ex: u₁₀ = [1 m/s, 2 m/s])
+
+Imput: Grid.jl and constants.jl
+Output: A file with the data of the simulation (.jld2)
+=#
+
 using Printf
 using DrWatson
 using Oceananigans
@@ -19,7 +29,7 @@ function DWF(u₁₀,dTdz,S,end_time,dimensions,names,run="false")
     Random.seed!(12345)
     Ξ(z) = randn() * z / model.grid.Lz * (1 + z / model.grid.Lz) # noise
 
-    ## Temperature initial condition: a stable density gradient with random noise superposed.
+    ## Temperature initial condition: 3 water mases homogeneous
     Tᵢ(x, y, z) = z >= -SW_lim ? SW[2] :
                 z >= -LIW_lim ? LIW[2] : DW[2] 
     #
@@ -27,11 +37,6 @@ function DWF(u₁₀,dTdz,S,end_time,dimensions,names,run="false")
     ## Velocity initial condition: random noise scaled by the friction velocity.
     uᵢ(x, y, z) = sqrt(abs(Qᵘ)) * 1e-3 * Ξ(z)
 
-    #Reference salinity used to set the model (function !set)
-    #=
-    Sᵢ(x, y, z) = z <= SW_lim ? SW[1] + dTdz * z + dTdz * model.grid.Lz * 1e-6 * Ξ(z) :
-                z <= LIW_lim ? LIW[1] + dTdz * z + dTdz * model.grid.Lz * 1e-6 * Ξ(z) : DW[1] + dTdz * z + dTdz * model.grid.Lz * 1e-6 * Ξ(z)
-    =#
 
     # ## Boundary conditions
     #
@@ -70,6 +75,13 @@ function DWF(u₁₀,dTdz,S,end_time,dimensions,names,run="false")
     # The boundary conditions on `u` are thus
 
     u_bcs = FieldBoundaryConditions(top = FluxBoundaryCondition(Qᵘ))
+
+    ##Salinity
+
+    #Definition of water masses 3 water mases homogeneous
+    Sᵢ(x, y, z) = z >= -SW_lim ? SW[1] :
+    z >= -LIW_lim ? LIW[1] : DW[1] 
+    #
 
     # For salinity, `S`, we impose an evaporative flux of the form
 
@@ -137,7 +149,7 @@ function DWF(u₁₀,dTdz,S,end_time,dimensions,names,run="false")
     #   `architecture = GPU()`.
 
     ## `set!` the `model` fields using functions or constants:
-    set!(model, u=uᵢ, w=uᵢ, T=Tᵢ, S=S)
+    set!(model, u=uᵢ, w=uᵢ, T=Tᵢ, S=Sᵢ)
 
     # ## Setting up a simulation
     #
@@ -182,7 +194,7 @@ function DWF(u₁₀,dTdz,S,end_time,dimensions,names,run="false")
     end
     params= names(u₁₀,dTdz,S,dim,end_time)
 
-    filename1=savename("DWF_t",params,"jld2")
+    filename1=savename(simulation_prefix, params,"jld2")
 
     ##save the output
 
@@ -198,9 +210,9 @@ function DWF(u₁₀,dTdz,S,end_time,dimensions,names,run="false")
     end
 end
 
-#Set the variables of the model that we want to change
-#DWF(u₁₀,dTdz,S,end_time,dimension,name)
-
 for i=1:10
-    DWF(u₁₀[i],dTdz[i],S[i],end_time[i],dimension[i],name,true)
+    DWF(u₁₀[i],dTdz[i],S[i],end_time[i],dimension[i],simulation_name,true)
+
+    println("__LAST SIMULATION COMPLETED__")
 end
+

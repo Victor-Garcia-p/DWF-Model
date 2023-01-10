@@ -1,3 +1,8 @@
+#=
+Info: This file has all the functions that are used in different files to 
+visualizate the data of the model (.jld2)
+=#
+
 #load drom a file TS variables, grid and position of the variables in the grid
 #ir requires an argument, name, with the name of all the files
 

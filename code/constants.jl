@@ -1,22 +1,21 @@
-#info: This file contains all the rang of variables that will be used to create the 
-#data of the simulacions
+#=
+Info: This file contains all constants that can be changed to define the model
+several constants can be defined using [] (ex: u₁₀ = [0,1,2,3] ). This will create multiples files with the 
+"model_loop" file.
+=#
 
 using Oceananigans
 using Oceananigans.Units: minute, minutes, hour
 
-#function to fill the variables that does not change
-function filling(fixed,shifting)
-    return x=fill(fixed,size(shifting))
-end
+##1) INITIAL CONDITIONS
 
-##INITIAL CONDITIONS
 #Define a salinity (homogeneous) and a gradient of temperature
 S = 35
 dTdz = 0.01 # K m⁻¹
 
-##Water mases    
+##Water mases: The model consists on 3 homogeneous water mases:
 
-#Surface water (0-200) (superficial values)
+#Surface Water (0-200) (superficial values) first value is the S and the second T
 SW= (37.95,13.18)
 SW_lim= 10
 
@@ -25,8 +24,8 @@ LIW= (38.54,13.38)
 LIW_lim= 20
 
 #Deep Water (600-2400) (100) (maximum values)
-DW= (38.51,13.18)
-DW_lim=30
+#DW= (38.51,13.18)
+#DW_lim=30
 
 #Estable values
 DW= (38.41,12.71)
@@ -36,22 +35,30 @@ DW_lim=30
 #T=12.71
 
 
-##FORCING CONDITIONS
-#Define the velocity of the wind
-u₁₀ = [0]
+##2) FORCING CONDITIONS
+#Define the velocity of the wind (m/s)
+u₁₀ = [2]
 
-#RUNNING FILES
-#Define the parameters of the simulation (at the future this will be opened from a file)
+
+##3)SIMULATION parameters
 end_time = 5minutes                    #Runtime for simulation
-dimension = (:, 16, :)      #used to create 3D files or 2D (a x or y must be setted)
+dimension = (:, 16, :)                 #Position of the simulation at the grid. For a 2D file x or y must be defined (ex: (:,16,:))
 
-#Make sure that all the variables have the same leght
+
+#Funtion to make sure that all the variables have the same lenght
+function filling(fixed,shifting)
+    return x=fill(fixed,size(shifting))
+end
+
 S=filling(S,u₁₀)
 dTdz=filling(dTdz,u₁₀)
 end_time=filling(end_time,u₁₀)
 dimension=filling(dimension,u₁₀)
 
-struct name
+##4)NAMING SIMULATION (a structure that constains what will be on the name of the simulation)
+simulation_prefix="TESTOO"
+
+struct simulation_name
     u₁₀
     dTdz
     S

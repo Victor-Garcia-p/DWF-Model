@@ -1,5 +1,8 @@
 #=
-Info: The file creates a mp4 video to show the evolution of 4 variables
+Info: The file creates a mp4 video when the data of the model is created.
+
+
+to show the evolution of 4 variables
 of the model, of a single simulation. The output will depends on the
 configuration of the simulation (ej: it will start at 10min)
 
