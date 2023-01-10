@@ -6,6 +6,5 @@ Note: this is only a basic documentation as the project is not finished yet. All
 Use: The code aims to simulate the process of Deep Water Convection based on the example code from Oceananigans. 
 
 How to run the model?
-1-Run the "model definition" file, wit will create a .jld2 file that has all the conditions required to run the model (boundary, forcing and initial conditions).
-
-2-Run the "model simulation". This will make the loop, according to the previous conditions. The output will be a .jld2 file but now with all the data.
+1-Constants.jl: Set the parameters of the simulation (ex: wind speed of 5 m/s), with the other parameters setted as defauld
+2-Run "model_loop.jl". This will create a file with the simulation, considering the constants that were setted
