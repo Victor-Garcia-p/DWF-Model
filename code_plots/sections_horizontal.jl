@@ -8,7 +8,7 @@ using GibbsSeaWater
 include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)
-load_variable("model_data_3Dgrid_t40_sim")  
+load_variable("DWFv2_S=35_dTdz=0.01_dim=2D_run=2400.0_u₁₀=0")  
 
 ##2          
 #2) Create a transversal section, x, in a fixed t

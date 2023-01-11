@@ -22,11 +22,11 @@ using Oceananigans.Units: minute, minutes, hour
 include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)
-load_variable("DWF_t_S=35_dTdz=0.01_dim=2D_run=300.0_u₁₀=0")    
+load_variable("extreme_S=35_dTdz=0.01_dim=2D_run=86400.0_u₁₀=0")    
 
 #Name and path of thefile
 filepath_out = joinpath(@__DIR__, "..", "Plots_out", "Simulations")
-video_name = "Test.mp4"
+video_name = "extreme_DWFv2_no_wind_2.mp4"
 
 # Turbulence visualization
 
@@ -58,7 +58,7 @@ nothing # hide
 # We start the animation at ``t = 10minutes`` since things are pretty boring till then:
 
 times = w.times
-intro = searchsortedfirst(times, 1minutes)
+intro = searchsortedfirst(times, 10minutes)
 
 # We are now ready to animate using Makie. We use Makie's `Observable` to animate
 # the data. To dive into how `Observable`s work we refer to
@@ -88,27 +88,25 @@ ax_νₑ = Axis(fig[3, 3]; title = "Eddy viscocity", axis_kwargs...)
 
 title = @lift @sprintf("t = %s", prettytime(times[$n]))
 
-#=
 #Note: The limits must be setted for depth>6 (if its the surface
 #makie can manage to change the limits automaticly). But for a depth of 7
 #We need to add as otherwise it will appear the
 #error "ERROR: ArgumentError: range step cannot be zero"
 wlims = (-0.05, 0.05)
-Tlims = (19.9, 19.99)
-Slims = (35, 35.005)
+Tlims = (-5, 13)
+Slims = (8, 32)
 νₑlims = (1e-6, 5e-3)
-=#
 
-hm_w = heatmap!(ax_w, xw, zw, wₙ; colormap = :balance)
+hm_w = heatmap!(ax_w, xw, zw, wₙ; colormap = :balance,colorrange = wlims)
 Colorbar(fig[2, 2], hm_w; label = "m s⁻¹")
 
-hm_T = heatmap!(ax_T, xT, zT, Tₙ; colormap = :thermal)
+hm_T = heatmap!(ax_T, xT, zT, Tₙ; colormap = :thermal,colorrange = Tlims)
 Colorbar(fig[2, 4], hm_T; label = "ᵒC")
 
-hm_S = heatmap!(ax_S, xT, zT, Sₙ; colormap = :haline)
+hm_S = heatmap!(ax_S, xT, zT, Sₙ; colormap = :haline,colorrange = Slims)
 Colorbar(fig[3, 2], hm_S; label = "g / kg")
 
-hm_νₑ = heatmap!(ax_νₑ, xT, zT, νₑₙ; colormap = :thermal)
+hm_νₑ = heatmap!(ax_νₑ, xT, zT, νₑₙ; colormap = :thermal,colorrange = νₑlims)
 Colorbar(fig[3, 4], hm_νₑ; label = "m s⁻²")
 
 fig[1, 1:4] = Label(fig, title, textsize = 24, tellwidth = false)

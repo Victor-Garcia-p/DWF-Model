@@ -14,11 +14,13 @@ using Oceananigans
 using Oceananigans.Units: minute, minutes, hour
 using Random
 
+include("grid_generation.jl")
 include("constants.jl")
+
 
 #Set the model
 function DWF(u₁₀,dTdz,S,end_time,dimensions,names,run="false")
-    include("grids_generation.jl")
+    
     # ## Initial conditions
     #
     # Our initial condition for temperature consists of a linear stratification superposed with

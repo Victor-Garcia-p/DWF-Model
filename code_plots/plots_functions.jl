@@ -8,7 +8,7 @@ visualizate the data of the model (.jld2)
 
 function load_variable(name_defauld="model_data_sim")
     #define the path of the model data&grid
-    grid = joinpath(@__DIR__, "..", "code","grids_generation.jl")
+    grid = joinpath(@__DIR__, "..", "code","grid_generation.jl")
     include(grid)
     filepath_in = joinpath.(@__DIR__, "..", "data", name_defauld.*".jld2")
 
