@@ -7,64 +7,62 @@ several constants can be defined using [] (ex: u₁₀ = [0,1,2,3] ). This will 
 using Oceananigans
 using Oceananigans.Units: minute, minutes, hour
 
-##1) INITIAL CONDITIONS
+##0) Setting the simulation
+number_simulations=1
+run_simulation=true            #Is the model running? Or it's just a test?
 
-#Define a salinity (homogeneous) and a gradient of temperature
-S = 35
-dTdz = 0.01 # K m⁻¹
-
-##Water mases: The model consists on 3 homogeneous water mases:
-
-#Surface Water (0-200) (superficial values) first value is the S and the second T
-#SW= (37.95,13.18)
-SW= (40,-5)
-SW_lim= 10
-
-#LIW (200-600) (30) (maximum values)
-#LIW= (38.54,13.38)
-LIW= (30, 15)
-LIW_lim= 20
-
-#Deep Water (600-2400) (100) (maximum values)
-#DW= (38.51,13.18)
-#DW_lim=30
-
-#Estable values
-#DW= (38.41,12.71)
-DW= (10,30)
-DW_lim=30
-
-#S=38.41
-#T=12.71
-
-
-##2) FORCING CONDITIONS
-#Define the velocity of the wind (m/s)
-u₁₀ = [0]
-
-
-##3)SIMULATION parameters
-end_time = 20minutes                    #Runtime for simulation
-dimension = (:, 16, :)                 #Position of the simulation at the grid. For a 2D file x or y must be defined (ex: (:,16,:))
-
-
-#Funtion to make sure that all the variables have the same lenght
-function filling(fixed,shifting)
-    return x=fill(fixed,size(shifting))
-end
-
-S=filling(S,u₁₀)
-dTdz=filling(dTdz,u₁₀)
-end_time=filling(end_time,u₁₀)
-dimension=filling(dimension,u₁₀)
-
-##4)NAMING SIMULATION (a structure that constains what will be on the name of the simulation)
-simulation_prefix="extreme"
-
-struct simulation_name
+simulation_prefix="3WM_"
+struct simulation_name              #Parameters used to make the name of the file
     u₁₀
-    dTdz
     S
+    dTdz
+    T
     dim
     run
 end
+
+##1) INITIAL CONDITIONS
+dTdz = 0.01       # Gradient of temperature (K m⁻¹)
+
+#Water mases: The model consists on 3 homogeneous water mases 
+#Surface Water (0-200) (superficial values) 
+#LIW (200-600) (maximum values)
+#Deep Water (600-2400) (100) (maximum values)
+
+T_WM=(13.18, 13.38, 12.71)                        #To write more simulations do it [(SW1,LIW1,DW1),(SW2,LIW2,DW2)]                   
+S_WM=(37.95,38.54,38.41)
+
+SW_lim, LIW_lim = 10, 20                          #limits between water masses
+
+
+##2) FORCING CONDITIONS
+u₁₀ = 10                                         #Velocity of the wind (m/s)
+
+
+##3)SIMULATION parameters
+end_time = 1140minutes                  #Runtime for simulation
+dimension = (:, 16, :)                             #Position of the simulation at the grid. For a 2D file x or y must be defined (ex: (:,16,:))
+
+
+#Funtion to make sure that all the variables have the same lenght. If the variable has the same lenght, do nothing
+function filling(fixed,n_simulations=number_simulations)
+    if size(fixed,1)==n_simulations
+        return fixed
+    else 
+        return x=fill(fixed,n_simulations)
+    end
+end
+
+#u₁₀=filling(u₁₀)
+#S_WM=filling(S_WM)
+#dTdz=filling(dTdz)
+#T_WM=filling(T_WM)
+#end_time=filling(end_time)
+#dimension=filling(dimension)
+
+#Transform the variables from tuples to matrix, so that is possible to make operations with them
+#u₁₀=hcat(collect.(u₁₀)...)
+#S_WM=hcat(collect.(S_WM)...)
+#dTdz=hcat(collect.(dTdz)...)
+#T_WM=hcat(collect.(T_WM)...)
+

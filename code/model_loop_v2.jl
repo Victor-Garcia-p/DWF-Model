@@ -15,9 +15,7 @@ using Random
 include("grid_generation.jl")
 include("constants.jl")
 
-
-#Set the model
-for i=1:number_simulations
+function DWF(u₁₀,S_WM,dTdz,T_WM,dimension,end_time,run_simulation="true")
     # Buoyancy that depends on temperature and salinity
     #
     # We use the `SeawaterBuoyancy` model with a linear equation of state,
@@ -40,7 +38,7 @@ for i=1:number_simulations
     # bottom of the domain, culminating in the boundary conditions on temperature,
 
     T_bcs = FieldBoundaryConditions(top = FluxBoundaryCondition(Qᵀ),
-                                bottom = GradientBoundaryCondition(dTdz[i]))
+                                bottom = GradientBoundaryCondition(dTdz))
 
     # Note that a positive temperature flux at the surface of the ocean
     # implies cooling. This is because a positive temperature flux implies
@@ -55,7 +53,7 @@ for i=1:number_simulations
     local cᴰ = 2.5e-3 # dimensionless drag coefficient
     local ρₐ = 1.225  # kg m⁻³, average density of air at sea-level
 
-    Qᵘ = - ρₐ / ρₒ * cᴰ * u₁₀[i] * abs(u₁₀[i]) # m² s⁻²
+    Qᵘ = - ρₐ / ρₒ * cᴰ * u₁₀* abs(u₁₀) # m² s⁻²
 
     # The boundary conditions on `u` are thus
 
@@ -63,7 +61,7 @@ for i=1:number_simulations
 
     # For salinity, `S`, we impose an evaporative flux of the form
 
-    @inline Qˢ(x, y, t, S, evaporation_rate) = - evaporation_rate * S_WM[i][1] # [salinity unit] m s⁻¹
+    @inline Qˢ(x, y, t, S, evaporation_rate) = - evaporation_rate * S_WM[1] # [salinity unit] m s⁻¹
     nothing # hide
 
     # where `S` is salinity. We use an evporation rate of 1 millimeter per hour,
@@ -104,13 +102,13 @@ for i=1:number_simulations
     Ξ(z) = randn() * z / model.grid.Lz * (1 + z / model.grid.Lz) # noise
 
     ##Salinity initial condition    
-    Sᵢ(x, y, z) = z >= -SW_lim ? S_WM[i][1] :
-    z >= -LIW_lim ? S_WM[i][2] : S_WM[i][3] 
+    Sᵢ(x, y, z) = z >= -SW_lim ? S_WM[1] :
+    z >= -LIW_lim ? S_WM[2] : S_WM[3] 
     #
    
     ## Temperature initial condition: 3 water mases homogeneous
-    Tᵢ(x, y, z) = z >= -SW_lim ? T_WM[i][1] + dTdz[i] * model.grid.Lz * 1e-6 * Ξ(z) :
-    z >= -LIW_lim ? T_WM[i][2] + dTdz[i] * model.grid.Lz * 1e-6 * Ξ(z) : T_WM[i][3] + dTdz[i] * model.grid.Lz * 1e-6 * Ξ(z) 
+    Tᵢ(x, y, z) = z >= -SW_lim ? T_WM[1] + dTdz * model.grid.Lz * 1e-6 * Ξ(z) :
+    z >= -LIW_lim ? T_WM[2] + dTdz* model.grid.Lz * 1e-6 * Ξ(z) : T_WM[3] + dTdz * model.grid.Lz * 1e-6 * Ξ(z) 
     #
 
     ## Velocity initial condition: random noise scaled by the friction velocity.
@@ -124,7 +122,7 @@ for i=1:number_simulations
     # We set-up a simulation with an initial time-step of 10 seconds
     # that stops at 40 minutes, with adaptive time-stepping and progress printing.
 
-    simulation = Simulation(model, Δt=10.0, stop_time=end_time[i])
+    simulation = Simulation(model, Δt=10.0, stop_time=end_time)
 
     # The `TimeStepWizard` helps ensure stable time-stepping
     # with a Courant-Freidrichs-Lewy (CFL) number of 1.0.   
@@ -155,16 +153,16 @@ for i=1:number_simulations
     eddy_viscosity = (; νₑ = model.diffusivity_fields.νₑ)
 
     ##Add the parameters, such as initial conditions, to the name of the file (DrWatson)
-    if sizeof(dimension[i])==0
+    if sizeof(dimension)==0
         dim="3D"
     else
         dim="2D"
     end
 
-    T_concatenated=string(T_WM[i][1],-,T_WM[i][2],-,T_WM[i][3])
-    S_concatenated=string(S_WM[i][1],-,S_WM[i][2],-,S_WM[i][3])
+    T_concatenated=string(T_WM[1],-,T_WM[2],-,T_WM[3])
+    S_concatenated=string(S_WM[1],-,S_WM[2],-,S_WM[3])
 
-    params= simulation_name(u₁₀[i],S_concatenated,dTdz[i],T_concatenated,dim,end_time[1][i])
+    params= simulation_name(u₁₀,S_concatenated,dTdz,T_concatenated,dim,end_time)
 
     filename=savename(simulation_prefix, params,"jld2",sort = false)
 
@@ -173,12 +171,20 @@ for i=1:number_simulations
     simulation.output_writers[:slices] =
         JLD2OutputWriter(model, merge(model.velocities, model.tracers, eddy_viscosity),
                         filename = joinpath(path,filename),
-                        indices = dimension[i],
+                        indices = dimension,
                         schedule = TimeInterval(1minute),
                         overwrite_existing = true)
     #
-    if run_simulation==true
-        return run!(simulation)
-    end
+
+    run!(simulation)
 end
 
+#Set the model
+
+DWF(u₁₀,S_WM,dTdz,T_WM,dimension,end_time)
+
+#=
+for i=1:number_simulations
+    DWF(u₁₀,S_WM[i],dTdz[i],T_WM[i],dimension,end_time)
+end
+=#

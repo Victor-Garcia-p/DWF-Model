@@ -22,11 +22,11 @@ using Oceananigans.Units: minute, minutes, hour
 include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)
-load_variable("extreme_S=35_dTdz=0.01_dim=2D_run=86400.0_u₁₀=0")    
+load_variable("3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_run=600.0")    
 
 #Name and path of thefile
 filepath_out = joinpath(@__DIR__, "..", "Plots_out", "Simulations")
-video_name = "extreme_DWFv2_no_wind_2.mp4"
+video_name = "3WM_test.mp4"
 
 # Turbulence visualization
 
@@ -58,7 +58,7 @@ nothing # hide
 # We start the animation at ``t = 10minutes`` since things are pretty boring till then:
 
 times = w.times
-intro = searchsortedfirst(times, 10minutes)
+intro = searchsortedfirst(times, 0minutes)
 
 # We are now ready to animate using Makie. We use Makie's `Observable` to animate
 # the data. To dive into how `Observable`s work we refer to
@@ -93,8 +93,8 @@ title = @lift @sprintf("t = %s", prettytime(times[$n]))
 #We need to add as otherwise it will appear the
 #error "ERROR: ArgumentError: range step cannot be zero"
 wlims = (-0.05, 0.05)
-Tlims = (-5, 13)
-Slims = (8, 32)
+Tlims = (12.7, 13.40)
+Slims = (37.8, 38.53)
 νₑlims = (1e-6, 5e-3)
 
 hm_w = heatmap!(ax_w, xw, zw, wₙ; colormap = :balance,colorrange = wlims)
