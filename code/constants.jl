@@ -8,17 +8,17 @@ using Oceananigans
 using Oceananigans.Units: minute, minutes, hour
 
 ##0) Setting the simulation
-number_simulations=1
-run_simulation=true            #Is the model running? Or it's just a test?
+number_simulations = 1
+run_simulation = true            #Is the model running? Or it's just a test?
 
-simulation_prefix="3WM_"
+simulation_prefix = "3WM_"
 struct simulation_name              #Parameters used to make the name of the file
-    u₁₀
-    S
-    dTdz
-    T
-    dim
-    run
+    u₁₀::Any
+    S::Any
+    dTdz::Any
+    T::Any
+    dim::Any
+    run::Any
 end
 
 ##1) INITIAL CONDITIONS
@@ -29,8 +29,8 @@ dTdz = 0.01       # Gradient of temperature (K m⁻¹)
 #LIW (200-600) (maximum values)
 #Deep Water (600-2400) (100) (maximum values)
 
-T_WM=(13.18, 13.38, 12.71)                        #To write more simulations do it [(SW1,LIW1,DW1),(SW2,LIW2,DW2)]                   
-S_WM=(37.95,38.54,38.41)
+T_WM = (13.18, 13.38, 12.71)                        #To write more simulations do it [(SW1,LIW1,DW1),(SW2,LIW2,DW2)]                   
+S_WM = (37.95, 38.54, 38.41)
 
 SW_lim, LIW_lim = 10, 20                          #limits between water masses
 
@@ -45,11 +45,11 @@ dimension = (:, 16, :)                             #Position of the simulation a
 
 
 #Funtion to make sure that all the variables have the same lenght. If the variable has the same lenght, do nothing
-function filling(fixed,n_simulations=number_simulations)
-    if size(fixed,1)==n_simulations
+function filling(fixed, n_simulations = number_simulations)
+    if size(fixed, 1) == n_simulations
         return fixed
-    else 
-        return x=fill(fixed,n_simulations)
+    else
+        return x = fill(fixed, n_simulations)
     end
 end
 

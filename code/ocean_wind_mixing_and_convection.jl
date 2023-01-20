@@ -53,15 +53,11 @@ h(k) = (k - 1) / Nz
 ## Generating function
 z_faces(k) = Lz * (ζ₀(k) * Σ(k) - 1)
 
-grid = RectilinearGrid(CPU();
-                       size = (32, 32, Nz), 
-                          x = (0, 64),
-                          y = (0, 64),
-                          z = z_faces)
+grid = RectilinearGrid(CPU(); size = (32, 32, Nz), x = (0, 64), y = (0, 64), z = z_faces)
 
 # We plot vertical spacing versus depth to inspect the prescribed grid stretching:
 
-fig = Figure(resolution=(1200, 800))
+fig = Figure(resolution = (1200, 800))
 ax = Axis(fig[1, 1], ylabel = "Depth (m)", xlabel = "Vertical spacing (m)")
 lines!(ax, grid.Δzᵃᵃᶜ[1:grid.Nz], grid.zᵃᵃᶜ[1:grid.Nz])
 scatter!(ax, grid.Δzᵃᵃᶜ[1:Nz], grid.zᵃᵃᶜ[1:Nz])
@@ -75,8 +71,12 @@ nothing #hide
 #
 # We use the `SeawaterBuoyancy` model with a linear equation of state,
 
-buoyancy = SeawaterBuoyancy(equation_of_state=LinearEquationOfState(thermal_expansion = 2e-4,
-                                                                    haline_contraction = 8e-4))
+buoyancy = SeawaterBuoyancy(
+    equation_of_state = LinearEquationOfState(
+        thermal_expansion = 2e-4,
+        haline_contraction = 8e-4,
+    ),
+)
 
 # ## Boundary conditions
 #
@@ -94,8 +94,10 @@ Qᵀ = Qʰ / (ρₒ * cᴾ) # K m s⁻¹, surface _temperature_ flux
 
 dTdz = 0.01 # K m⁻¹
 
-T_bcs = FieldBoundaryConditions(top = FluxBoundaryCondition(Qᵀ),
-                                bottom = GradientBoundaryCondition(dTdz))
+T_bcs = FieldBoundaryConditions(
+    top = FluxBoundaryCondition(Qᵀ),
+    bottom = GradientBoundaryCondition(dTdz),
+)
 
 # Note that a positive temperature flux at the surface of the ocean
 # implies cooling. This is because a positive temperature flux implies
@@ -110,7 +112,7 @@ u₁₀ = 10    # m s⁻¹, average wind velocity 10 meters above the ocean
 cᴰ = 2.5e-3 # dimensionless drag coefficient
 ρₐ = 1.225  # kg m⁻³, average density of air at sea-level
 
-Qᵘ = - ρₐ / ρₒ * cᴰ * u₁₀ * abs(u₁₀) # m² s⁻²
+Qᵘ = -ρₐ / ρₒ * cᴰ * u₁₀ * abs(u₁₀) # m² s⁻²
 
 # The boundary conditions on `u` are thus
 
@@ -118,7 +120,7 @@ u_bcs = FieldBoundaryConditions(top = FluxBoundaryCondition(Qᵘ))
 
 # For salinity, `S`, we impose an evaporative flux of the form
 
-@inline Qˢ(x, y, t, S, evaporation_rate) = - evaporation_rate * S # [salinity unit] m s⁻¹
+@inline Qˢ(x, y, t, S, evaporation_rate) = -evaporation_rate * S # [salinity unit] m s⁻¹
 nothing # hide
 
 # where `S` is salinity. We use an evporation rate of 1 millimeter per hour,
@@ -129,11 +131,12 @@ evaporation_rate = 1e-3 / hour # m s⁻¹
 # indicating that `Qˢ` depends on salinity `S` and passing
 # the parameter `evaporation_rate`,
 
-evaporation_bc = FluxBoundaryCondition(Qˢ, field_dependencies=:S, parameters=evaporation_rate)
+evaporation_bc =
+    FluxBoundaryCondition(Qˢ, field_dependencies = :S, parameters = evaporation_rate)
 
 # The full salinity boundary conditions are
 
-S_bcs = FieldBoundaryConditions(top=evaporation_bc)
+S_bcs = FieldBoundaryConditions(top = evaporation_bc)
 
 # ## Model instantiation
 #
@@ -143,13 +146,16 @@ S_bcs = FieldBoundaryConditions(top=evaporation_bc)
 # for large eddy simulation to model the effect of turbulent motions at
 # scales smaller than the grid scale that we cannot explicitly resolve.
 
-model = NonhydrostaticModel(; grid, buoyancy,
-                            advection = UpwindBiasedFifthOrder(),
-                            timestepper = :RungeKutta3,
-                            tracers = (:T, :S),
-                            coriolis = FPlane(f=1e-4),
-                            closure = AnisotropicMinimumDissipation(),
-                            boundary_conditions = (u=u_bcs, T=T_bcs, S=S_bcs))
+model = NonhydrostaticModel(;
+    grid,
+    buoyancy,
+    advection = UpwindBiasedFifthOrder(),
+    timestepper = :RungeKutta3,
+    tracers = (:T, :S),
+    coriolis = FPlane(f = 1e-4),
+    closure = AnisotropicMinimumDissipation(),
+    boundary_conditions = (u = u_bcs, T = T_bcs, S = S_bcs),
+)
 
 # Notes:
 #
@@ -175,27 +181,32 @@ Tᵢ(x, y, z) = 20 + dTdz * z + dTdz * model.grid.Lz * 1e-6 * Ξ(z)
 uᵢ(x, y, z) = sqrt(abs(Qᵘ)) * 1e-3 * Ξ(z)
 
 ## `set!` the `model` fields using functions or constants:
-set!(model, u=uᵢ, w=uᵢ, T=Tᵢ, S=35)
+set!(model, u = uᵢ, w = uᵢ, T = Tᵢ, S = 35)
 
 # ## Setting up a simulation
 #
 # We set-up a simulation with an initial time-step of 10 seconds
 # that stops at 40 minutes, with adaptive time-stepping and progress printing.
 
-simulation = Simulation(model, Δt=10.0, stop_time=40minutes)
+simulation = Simulation(model, Δt = 10.0, stop_time = 40minutes)
 
 # The `TimeStepWizard` helps ensure stable time-stepping
 # with a Courant-Freidrichs-Lewy (CFL) number of 1.0.
 
-wizard = TimeStepWizard(cfl=1.0, max_change=1.1, max_Δt=1minute)
+wizard = TimeStepWizard(cfl = 1.0, max_change = 1.1, max_Δt = 1minute)
 simulation.callbacks[:wizard] = Callback(wizard, IterationInterval(10))
 
 # Nice progress messaging is helpful:
 
 ## Print a progress message
-progress_message(sim) = @printf("Iteration: %04d, time: %s, Δt: %s, max(|w|) = %.1e ms⁻¹, wall time: %s\n",
-                                iteration(sim), prettytime(sim), prettytime(sim.Δt),
-                                maximum(abs, sim.model.velocities.w), prettytime(sim.run_wall_time))
+progress_message(sim) = @printf(
+    "Iteration: %04d, time: %s, Δt: %s, max(|w|) = %.1e ms⁻¹, wall time: %s\n",
+    iteration(sim),
+    prettytime(sim),
+    prettytime(sim.Δt),
+    maximum(abs, sim.model.velocities.w),
+    prettytime(sim.run_wall_time)
+)
 
 simulation.callbacks[:progress] = Callback(progress_message, IterationInterval(20))
 
@@ -213,12 +224,14 @@ eddy_viscosity = (; νₑ = model.diffusivity_fields.νₑ)
 
 filename = "ocean_wind_mixing_and_convection"
 
-simulation.output_writers[:slices] =
-    JLD2OutputWriter(model, merge(model.velocities, model.tracers, eddy_viscosity),
-                     filename = filename * ".jld2",
-                     indices = (:, grid.Ny/2, :),
-                     schedule = TimeInterval(1minute),
-                     overwrite_existing = true)
+simulation.output_writers[:slices] = JLD2OutputWriter(
+    model,
+    merge(model.velocities, model.tracers, eddy_viscosity),
+    filename = filename * ".jld2",
+    indices = (:, grid.Ny / 2, :),
+    schedule = TimeInterval(1minute),
+    overwrite_existing = true,
+)
 
 # We're ready:
 
@@ -232,10 +245,12 @@ run!(simulation)
 
 filepath = filename * ".jld2"
 
-time_series = (w = FieldTimeSeries(filepath, "w"),
-               T = FieldTimeSeries(filepath, "T"),
-               S = FieldTimeSeries(filepath, "S"),
-               νₑ = FieldTimeSeries(filepath, "νₑ"))
+time_series = (
+    w = FieldTimeSeries(filepath, "w"),
+    T = FieldTimeSeries(filepath, "T"),
+    S = FieldTimeSeries(filepath, "S"),
+    νₑ = FieldTimeSeries(filepath, "νₑ"),
+)
 
 ## Coordinate arrays
 xw, yw, zw = nodes(time_series.w)
@@ -252,21 +267,23 @@ intro = searchsortedfirst(times, 10minutes)
 
 n = Observable(intro)
 
- wₙ = @lift interior(time_series.w[$n],  :, 1, :)
- Tₙ = @lift interior(time_series.T[$n],  :, 1, :)
- Sₙ = @lift interior(time_series.S[$n],  :, 1, :)
+wₙ = @lift interior(time_series.w[$n], :, 1, :)
+Tₙ = @lift interior(time_series.T[$n], :, 1, :)
+Sₙ = @lift interior(time_series.S[$n], :, 1, :)
 νₑₙ = @lift interior(time_series.νₑ[$n], :, 1, :)
 
 fig = Figure(resolution = (1000, 500))
 
-axis_kwargs = (xlabel="x (m)",
-               ylabel="z (m)",
-               aspect = AxisAspect(grid.Lx/grid.Lz),
-               limits = ((0, grid.Lx), (-grid.Lz, 0)))
+axis_kwargs = (
+    xlabel = "x (m)",
+    ylabel = "z (m)",
+    aspect = AxisAspect(grid.Lx / grid.Lz),
+    limits = ((0, grid.Lx), (-grid.Lz, 0)),
+)
 
-ax_w  = Axis(fig[2, 1]; title = "Vertical velocity", axis_kwargs...)
-ax_T  = Axis(fig[2, 3]; title = "Temperature", axis_kwargs...)
-ax_S  = Axis(fig[3, 1]; title = "Salinity", axis_kwargs...)
+ax_w = Axis(fig[2, 1]; title = "Vertical velocity", axis_kwargs...)
+ax_T = Axis(fig[2, 3]; title = "Temperature", axis_kwargs...)
+ax_S = Axis(fig[3, 1]; title = "Salinity", axis_kwargs...)
 ax_νₑ = Axis(fig[3, 3]; title = "Eddy viscocity", axis_kwargs...)
 
 title = @lift @sprintf("t = %s", prettytime(times[$n]))
@@ -288,7 +305,7 @@ Colorbar(fig[3, 2], hm_S; label = "g / kg")
 hm_νₑ = heatmap!(ax_νₑ, xT, zT, νₑₙ; colormap = :thermal, colorrange = νₑlims)
 Colorbar(fig[3, 4], hm_νₑ; label = "m s⁻²")
 
-fig[1, 1:4] = Label(fig, title, textsize=24, tellwidth=false)
+fig[1, 1:4] = Label(fig, title, textsize = 24, tellwidth = false)
 
 # And now record a movie.
 
@@ -296,7 +313,7 @@ frames = intro:length(times)
 
 @info "Making a motion picture of ocean wind mixing and convection..."
 
-record(fig, filename * ".mp4", frames, framerate=8) do i
+record(fig, filename * ".mp4", frames, framerate = 8) do i
     msg = string("Plotting frame ", i, " of ", frames[end])
     print(msg * " \r")
     n[] = i

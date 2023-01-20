@@ -31,8 +31,5 @@ function z_faces(k)
 end
 
 
-grid = RectilinearGrid(size = (32, 32, Nz), 
-                          x = (0, 64),
-                          y = (0, 64),
-                          z = z_faces)
+grid = RectilinearGrid(size = (32, 32, Nz), x = (0, 64), y = (0, 64), z = z_faces)
 #

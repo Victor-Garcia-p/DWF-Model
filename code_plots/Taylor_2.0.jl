@@ -44,7 +44,7 @@ Eⁱ = rmsd(t_20, t_20_2)
 σᵣ = 5.5            #Standard deviation of a reference simulation
 σf = 7              #Standard deviation of a simulation "f"
 #Eⁱ = 1.6*1         #Root-mean-square deviation, RMSD (0 to 1)
-P= 0.7
+P = 0.7
 
 #0.1)Convert values into axial coordinates (xy) using cosine theorem
 #ϕ = acos((σf^2 + σᵣ^2 - Eⁱ^2) / (2 * σf * σᵣ))
@@ -70,7 +70,7 @@ limits!(ax, BBox(limits[1], limits[2], limits[3], limits[4]))
 
 #2.0)Make the Eⁱ contours, based on coordinates of reference
 #lengh will define how many contours does the figure have
-divisions=5
+divisions = 5
 
 rs_2 = range(0, R, length = divisions)
 

@@ -22,11 +22,13 @@ using Oceananigans.Units: minute, minutes, hour
 include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)
-load_variable("3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_run=600.0")    
+load_variable(
+    "3WM__u₁₀=10_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_run=68400.0",
+)
 
 #Name and path of thefile
 filepath_out = joinpath(@__DIR__, "..", "Plots_out", "Simulations")
-video_name = "3WM_test.mp4"
+video_name = "3WM_long.mp4"
 
 # Turbulence visualization
 
@@ -78,7 +80,7 @@ axis_kwargs = (
     xlabel = "x (m)",
     ylabel = "z (m)",
     aspect = AxisAspect(grid.Lx / grid.Lz),
-    limits = ((0, grid.Lx), (-grid.Lz,0)),
+    limits = ((0, grid.Lx), (-grid.Lz, 0)),
 )
 
 ax_w = Axis(fig[2, 1]; title = "Vertical velocity", axis_kwargs...)
@@ -97,16 +99,16 @@ Tlims = (12.7, 13.40)
 Slims = (37.8, 38.53)
 νₑlims = (1e-6, 5e-3)
 
-hm_w = heatmap!(ax_w, xw, zw, wₙ; colormap = :balance,colorrange = wlims)
+hm_w = heatmap!(ax_w, xw, zw, wₙ; colormap = :balance, colorrange = wlims)
 Colorbar(fig[2, 2], hm_w; label = "m s⁻¹")
 
-hm_T = heatmap!(ax_T, xT, zT, Tₙ; colormap = :thermal,colorrange = Tlims)
+hm_T = heatmap!(ax_T, xT, zT, Tₙ; colormap = :thermal, colorrange = Tlims)
 Colorbar(fig[2, 4], hm_T; label = "ᵒC")
 
-hm_S = heatmap!(ax_S, xT, zT, Sₙ; colormap = :haline,colorrange = Slims)
+hm_S = heatmap!(ax_S, xT, zT, Sₙ; colormap = :haline, colorrange = Slims)
 Colorbar(fig[3, 2], hm_S; label = "g / kg")
 
-hm_νₑ = heatmap!(ax_νₑ, xT, zT, νₑₙ; colormap = :thermal,colorrange = νₑlims)
+hm_νₑ = heatmap!(ax_νₑ, xT, zT, νₑₙ; colormap = :thermal, colorrange = νₑlims)
 Colorbar(fig[3, 4], hm_νₑ; label = "m s⁻²")
 
 fig[1, 1:4] = Label(fig, title, textsize = 24, tellwidth = false)

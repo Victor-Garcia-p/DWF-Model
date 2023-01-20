@@ -43,7 +43,7 @@ Eⁱ = rmsd(t_20, t_20_2)
 σᵣ = 5.5          #Standard deviation of a reference simulation
 σf = 6.5          #Standard deviation of a simulation "f"
 Eⁱ = 5            #Root-mean-square deviation, RMSD (0 to 1)
-P= 0.7
+P = 0.7
 
 #0.1)Convert values into axial coordinates (xy) using cosine theorem
 #ϕ = acos((σf^2 + σᵣ^2 - Eⁱ^2) / (2 * σf * σᵣ))
