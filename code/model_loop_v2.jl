@@ -13,36 +13,112 @@ using Oceananigans.Units: minute, minutes, hour
 using Random
 
 include("grid_generation.jl")
-include("constants.jl")
 
-function DWF(u₁₀, S_WM, dTdz, T_WM, dimension, end_time, run_simulation = "true")
-    # Buoyancy that depends on temperature and salinity
-    #
-    # We use the `SeawaterBuoyancy` model with a linear equation of state,
 
-    buoyancy = SeawaterBuoyancy(
-        equation_of_state = LinearEquationOfState(
-            thermal_expansion = 2e-4,
-            haline_contraction = 8e-4,
-        ),
-    )
+#define the name of the output files and the path
+const path = joinpath(@__DIR__, "..", "data")
 
-    ## Boundary conditions
-    #
-    # We calculate the surface temperature flux associated with surface heating of
-    # 200 W m⁻², reference density `ρₒ`, and heat capacity `cᴾ`,
+struct WaterLayer{T<:Real}
+    max_depth::T
+    S::T
+    T::T
+end
 
-    local Qʰ = 200.0  # W m⁻², surface _heat_ flux
-    local ρₒ = 1026.0 # kg m⁻³, average density at the surface of the world ocean
-    local cᴾ = 3991.0 # J K⁻¹ kg⁻¹, typical heat capacity for seawater
+struct simulation_name              #Parameters used to make the name of the file
+    u₁₀::Int8
+    S::Any
+    dTdz::Any
+    T::Any
+    dim::Any
+    run::Any
+end
 
-    Qᵀ = Qʰ / (ρₒ * cᴾ) # K m s⁻¹, surface _temperature_ flux
+# A seed is used so that the random noise is the same in all simulations
+Random.seed!(12345)
 
+## Random noise damped at top and bottom.
+Ξ(z) = randn() * z / grid.Lz * (1 + z / grid.Lz) # noise
+
+
+# Buoyancy that depends on temperature and salinity
+# We use the `SeawaterBuoyancy` model with a linear equation of state,
+
+buoyancy = SeawaterBuoyancy(
+    equation_of_state = LinearEquationOfState(
+        thermal_expansion = 2e-4,
+        haline_contraction = 8e-4,
+    ),
+)
+
+## Boundary conditions
+#
+# We calculate the surface temperature flux associated with surface heating of
+# 200 W m⁻², reference density `ρₒ`, and heat capacity `cᴾ`,
+const Qʰ = 200.0  # W m⁻², surface _heat_ flux
+const ρₒ = 1026.0 # kg m⁻³, average density at the surface of the world ocean
+const cᴾ = 3991.0 # J K⁻¹ kg⁻¹, typical heat capacity for seawater
+const Qᵀ = Qʰ / (ρₒ * cᴾ) # K m s⁻¹, surface _temperature_ flux
+
+top_boundary_condition = FluxBoundaryCondition(Qᵀ) # temperature bc
+
+#u₁₀ = 10    # m s⁻¹, average wind velocity 10 meters above the ocean
+const cᴰ = 2.5e-3 # dimensionless drag coefficient
+const ρₐ = 1.225  # kg m⁻³, average density of air at sea-level
+
+
+# For salinity, `S`, we impose an evaporative flux of the form
+@inline Qˢ(x, y, t, S, evaporation_rate) = -evaporation_rate * S # [salinity unit] m s⁻¹
+nothing # hide
+
+
+## Temperature initial condition for any number of homogeneous water mases (layers)
+function initial_temperature(layers::Vector{WaterLayer{T}}, dTdz) where T<:Real
+
+    function func(z)
+        for layer in layers
+            if z >= -layer.max_depth
+                return layer.T + dTdz * grid.Lz * 1e-6 * Ξ(z)
+            end
+        end
+    end
+
+    Tᵢ(x, y, z) = func(z)
+
+end
+
+
+function initial_salinity(layers::Vector{WaterLayer{T}}) where T<:Real
+
+    function func(z)
+        for layer in layers
+            if z >= -layer.max_depth
+                return layer.S
+            end
+        end
+    end
+
+    Sᵢ(x, y, z) = func(z)
+end
+
+
+function DWF(layers::WaterLayer{<:Real}...;
+             u₁₀=10,
+             dTdz=0.01,
+             dimension=(:, 16, :),
+             evaporation_rate=1e-3 / hour,
+             end_time=1140minutes,
+             Δt = 10.0,
+             run_simulation=true,
+             simulation_prefix="3WM_")
+
+
+    # order by max_depth (shallower first)
+    ordered_layers = sort([layer for layer in layers], by = v -> v.max_depth, rev=false)
     # Finally, we impose a temperature gradient `dTdz` both initially and at the
     # bottom of the domain, culminating in the boundary conditions on temperature,
 
     T_bcs = FieldBoundaryConditions(
-        top = FluxBoundaryCondition(Qᵀ),
+        top = top_boundary_condition,
         bottom = GradientBoundaryCondition(dTdz),
     )
 
@@ -55,9 +131,6 @@ function DWF(u₁₀, S_WM, dTdz, T_WM, dimension, end_time, run_simulation = "t
     # to estimate the kinematic stress (that is, stress divided by density) exerted
     # by the wind on the ocean:
 
-    #u₁₀ = 10    # m s⁻¹, average wind velocity 10 meters above the ocean
-    local cᴰ = 2.5e-3 # dimensionless drag coefficient
-    local ρₐ = 1.225  # kg m⁻³, average density of air at sea-level
 
     Qᵘ = -ρₐ / ρₒ * cᴰ * u₁₀ * abs(u₁₀) # m² s⁻²
 
@@ -65,31 +138,20 @@ function DWF(u₁₀, S_WM, dTdz, T_WM, dimension, end_time, run_simulation = "t
 
     u_bcs = FieldBoundaryConditions(top = FluxBoundaryCondition(Qᵘ))
 
-    # For salinity, `S`, we impose an evaporative flux of the form
-
-    @inline Qˢ(x, y, t, S, evaporation_rate) = -evaporation_rate * S_WM[1] # [salinity unit] m s⁻¹
-    nothing # hide
-
-    # where `S` is salinity. We use an evporation rate of 1 millimeter per hour,
-
-    local evaporation_rate = 1e-3 / hour # m s⁻¹
 
     # We build the `Flux` evaporation `BoundaryCondition` with the function `Qˢ`,
     # indicating that `Qˢ` depends on salinity `S` and passing
     # the parameter `evaporation_rate`,
 
     evaporation_bc =
-        FluxBoundaryCondition(Qˢ, field_dependencies = :S, parameters = evaporation_rate)
+        FluxBoundaryCondition(
+            Qˢ, field_dependencies = :S, parameters = evaporation_rate)
 
     # The full salinity boundary conditions are
 
     S_bcs = FieldBoundaryConditions(top = evaporation_bc)
 
     ##MODEL DEFINITION
-
-    #define the name of the output files and the path
-    path = joinpath(@__DIR__, "..", "data")
-
     #Create the base of the filename. At the end DrWatson will add to the same base name
     #some parameters that will include initial conditions, etc.
     model = NonhydrostaticModel(;
@@ -104,39 +166,26 @@ function DWF(u₁₀, S_WM, dTdz, T_WM, dimension, end_time, run_simulation = "t
     )
     #
 
-
-    #INITIAL CONDITIONS
-
-    ## Random noise damped at top and bottom. A seed is used so that the random noise is the same in all simulations
-    Random.seed!(12345)
-    Ξ(z) = randn() * z / model.grid.Lz * (1 + z / model.grid.Lz) # noise
-
-    ##Salinity initial condition    
-    Sᵢ(x, y, z) = z >= -SW_lim ? S_WM[1] : z >= -LIW_lim ? S_WM[2] : S_WM[3]
-    #
-
-    ## Temperature initial condition: 3 water mases homogeneous
-    Tᵢ(x, y, z) =
-        z >= -SW_lim ? T_WM[1] + dTdz * model.grid.Lz * 1e-6 * Ξ(z) :
-        z >= -LIW_lim ? T_WM[2] + dTdz * model.grid.Lz * 1e-6 * Ξ(z) :
-        T_WM[3] + dTdz * model.grid.Lz * 1e-6 * Ξ(z)
-    #
-
     ## Velocity initial condition: random noise scaled by the friction velocity.
     uᵢ(x, y, z) = sqrt(abs(Qᵘ)) * 1e-3 * Ξ(z)
 
     ## `set!` the `model` fields using functions or constants:
-    set!(model, u = uᵢ, w = uᵢ, T = Tᵢ, S = Sᵢ)
+    set!(model,
+         u = uᵢ,
+         w = uᵢ,
+         T = initial_temperature(ordered_layers, dTdz),
+         S = initial_salinity(ordered_layers)
+         )
 
     # ## Setting up a simulation
     #
     # We set-up a simulation with an initial time-step of 10 seconds
     # that stops at 40 minutes, with adaptive time-stepping and progress printing.
 
-    simulation = Simulation(model, Δt = 10.0, stop_time = end_time)
+    simulation = Simulation(model, Δt = Δt, stop_time = end_time)
 
     # The `TimeStepWizard` helps ensure stable time-stepping
-    # with a Courant-Freidrichs-Lewy (CFL) number of 1.0.   
+    # with a Courant-Freidrichs-Lewy (CFL) number of 1.0.
 
 
     wizard = TimeStepWizard(cfl = 1.0, max_change = 1.1, max_Δt = 1minute)
@@ -168,17 +217,14 @@ function DWF(u₁₀, S_WM, dTdz, T_WM, dimension, end_time, run_simulation = "t
     ## Create a NamedTuple with eddy viscosity
     eddy_viscosity = (; νₑ = model.diffusivity_fields.νₑ)
 
-    ##Add the parameters, such as initial conditions, to the name of the file (DrWatson)
-    if sizeof(dimension) == 0
-        dim = "3D"
-    else
-        dim = "2D"
-    end
-
-    T_concatenated = string(T_WM[1], -, T_WM[2], -, T_WM[3])
-    S_concatenated = string(S_WM[1], -, S_WM[2], -, S_WM[3])
-
-    params = simulation_name(u₁₀, S_concatenated, dTdz, T_concatenated, dim, end_time)
+    # params to generate simulation file name
+    params = simulation_name(
+        u₁₀,
+        join(map(x->string(x.S), layers), "-"),
+        dTdz,
+        join(map(x->string(x.T), layers), "-"),
+        sizeof(dimension) == 0 ? "3D" : "2D",
+        end_time)
 
     filename = savename(simulation_prefix, params, "jld2", sort = false)
 
@@ -197,12 +243,7 @@ function DWF(u₁₀, S_WM, dTdz, T_WM, dimension, end_time, run_simulation = "t
     run!(simulation)
 end
 
-#Set the model
 
-DWF(u₁₀, S_WM, dTdz, T_WM, dimension, end_time)
 
-#=
-for i=1:number_simulations
-    DWF(u₁₀,S_WM[i],dTdz[i],T_WM[i],dimension,end_time)
-end
-=#
+
+
