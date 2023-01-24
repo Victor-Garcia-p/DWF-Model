@@ -24,7 +24,7 @@ struct WaterLayer{T<:Real}
     T::T
 end
 
-struct simulation_name              #Parameters used to make the name of the file
+mutable struct simulation_name              #Parameters used to make the name of the file
     u₁₀::Int8
     S::Any
     dTdz::Any
@@ -101,19 +101,20 @@ function initial_salinity(layers::Vector{WaterLayer{T}}) where T<:Real
 end
 
 
-function DWF(layers::WaterLayer{<:Real}...;
+function sort_layers(layers::WaterLayer{<:Real}...)
+    # order by max_depth (shallower first)
+    sorted_layers = sort([layer for layer in layers], by = v -> v.max_depth, rev=false)
+
+end
+
+function build_model(layers::Vector{WaterLayer{T}};
              u₁₀=10,
              dTdz=0.01,
-             dimension=(:, 16, :),
              evaporation_rate=1e-3 / hour,
-             end_time=1140minutes,
-             Δt = 10.0,
-             run_simulation=true,
-             simulation_prefix="3WM_")
+             ) where T <:Real
 
 
-    # order by max_depth (shallower first)
-    ordered_layers = sort([layer for layer in layers], by = v -> v.max_depth, rev=false)
+
     # Finally, we impose a temperature gradient `dTdz` both initially and at the
     # bottom of the domain, culminating in the boundary conditions on temperature,
 
@@ -173,9 +174,35 @@ function DWF(layers::WaterLayer{<:Real}...;
     set!(model,
          u = uᵢ,
          w = uᵢ,
-         T = initial_temperature(ordered_layers, dTdz),
-         S = initial_salinity(ordered_layers)
+         T = initial_temperature(layers, dTdz),
+         S = initial_salinity(layers)
          )
+
+    params = simulation_name(
+       u₁₀,
+       join(map(x->string(x.S), layers), "-"),
+       dTdz,
+       join(map(x->string(x.T), layers), "-"),
+       nothing,
+       nothing)
+
+    return model, params
+
+end
+
+
+
+function build_simulation_name(params, simulation_prefix)
+    # params to generate simulation file name
+    filename = savename(simulation_prefix, params, "jld2", sort = false)
+end
+
+
+function prepare_simulation!(params, model;
+                             dimension=(:, 16, :),
+                             end_time=1140minutes,
+                             Δt = 10.0,
+                             simulation_prefix="3WM_")
 
     # ## Setting up a simulation
     #
@@ -217,18 +244,9 @@ function DWF(layers::WaterLayer{<:Real}...;
     ## Create a NamedTuple with eddy viscosity
     eddy_viscosity = (; νₑ = model.diffusivity_fields.νₑ)
 
-    # params to generate simulation file name
-    params = simulation_name(
-        u₁₀,
-        join(map(x->string(x.S), layers), "-"),
-        dTdz,
-        join(map(x->string(x.T), layers), "-"),
-        sizeof(dimension) == 0 ? "3D" : "2D",
-        end_time)
-
-    filename = savename(simulation_prefix, params, "jld2", sort = false)
-
     ##save the output
+    params.dim = sizeof(dimension) == 0 ? "3D" : "2D"
+    filename = build_simulation_name(params, simulation_prefix)
 
     simulation.output_writers[:slices] = JLD2OutputWriter(
         model,
@@ -238,9 +256,8 @@ function DWF(layers::WaterLayer{<:Real}...;
         schedule = TimeInterval(1minute),
         overwrite_existing = true,
     )
-    #
 
-    run!(simulation)
+    return simulation
 end
 
 
