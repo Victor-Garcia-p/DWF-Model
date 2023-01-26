@@ -188,7 +188,7 @@ function build_model(layers::Vector{WaterLayer{T}};
        dTdz,
        join(map(x->string(x.T), layers), "-")
        )
-    
+
     @info "The model was built for $(length(layers)) layers, with u₁₀=$u₁₀, dTdZ=$dTdz and evaporation_rate=$evaporation_rate"
     return model, params
 
@@ -254,7 +254,6 @@ function prepare_simulation!(params,
 
     ##save the output
     params.dim = sizeof(dimension) == 0 ? "3D" : "2D"
-    
     filename = build_simulation_name(params, simulation_prefix)
 
     simulation.output_writers[:slices] = JLD2OutputWriter(
