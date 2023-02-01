@@ -17,12 +17,12 @@ using GibbsSeaWater
 include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)
-load_variable("test_def")
+load_variable("3WM__u₁₀=0_S=37.92-38.32-38.49_dTdz=0.01_T=14.17-13.22-12.93_dim=2D_run=1200.0")
 
 ##
 #1)Make a temperature profile on two setted xy to compare values
-t_0 = T[1].data[32, 2, :, 1]
-#t_40=T[1].data[32,16,:,end]
+t_0 = T.data[32, 16, :, 1]
+t_40=T.data[32,16,:,end]
 #t_40_2=T[1].data[20,16,:,end]
 
 fig = Figure(resolution = (1200, 800))
@@ -33,11 +33,12 @@ ax = Axis(
     title = "Secció a t=40min variant la magnitud del vent (=condicions inicials)",
 )
 
-sca1 = scatter!(ax, T_plot[5], zT)
-sca2 = scatter!(ax, T_plot[10], zT)
-sca0 = linesegments!(ax, t_0, zT, linewidth = 0.3)
+sca1 = scatter!(ax, N2[:,:,21], zT)
+#sca2 = scatter!(ax, T_plot[10], zT)
+#sca0 = scatter!(ax, t_0, zT, linewidth = 0.3)
 
-axislegend(
+#=
+#axislegend(
     ax,
     [sca0, sca1, sca2],
     ["Initial situation", "5", "10"],
@@ -45,6 +46,7 @@ axislegend(
     position = :rb,
     orientation = :horizontal,
 )
+=#
 
 display(fig)
 
@@ -52,7 +54,9 @@ display(fig)
 #2) Create a section, x, in a fixed t
 #note: a meridional section would be the same fixing x and not the y
 
-Tn = reshape(T.data[:, 16, :, 1], (32, 24))
+σ=gsw_sigma0.(Sa.data[:, 16, :, 21], T.data[:, 16, :, 21])
+
+Tn = reshape(σ, (32, 24))
 #Sn=reshape(Sa.data[:,12,:,11],(32,32))
 
 #σ=gsw_sigma0.(Sa.data[:,:,:,21],T.data[:,:,:,21])
