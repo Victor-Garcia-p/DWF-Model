@@ -7,7 +7,7 @@ using GibbsSeaWater
 @quickactivate "DWC_model"
 include("plots_functions.jl")
 
-load_variable("3WM__u₁₀=0_S=37.92-38.32-38.49_dTdz=0.01_T=14.17-13.22-12.93_dim=2D_run=1200.0")
+load_file("3WM__u₁₀=0_S=37.92-38.32-38.49_dTdz=0.01_T=14.17-13.22-12.93_dim=2D_run=1200.0")
 
 ## 1)Calculate the density
 σ=gsw_sigma0.(Sa.data[:, 16, :, :], T.data[:, 16, :, :])

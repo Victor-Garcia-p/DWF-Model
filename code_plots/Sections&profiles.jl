@@ -12,18 +12,21 @@ using CairoMakie
 using Oceananigans
 using GibbsSeaWater
 
-#load the local environment not the global which is defauld in Julia
-@quickactivate "DWC_model"
+#load the local environment of the project and custom functions
+
+@quickactivate "DWF_model"
 include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)
-load_variable("3WM__u₁₀=0_S=37.92-38.32-38.49_dTdz=0.01_T=14.17-13.22-12.93_dim=2D_run=1200.0")
+load_file("3WM__u₁₀=0_S=37.92-38.32-38.49_dTdz=0.01_T=14.17-13.22-12.93_dim=2D_run=1200.0")
+
+load_AOI(32,16,:,:,"S")
 
 ##
-#1)Make a temperature profile on two setted xy to compare values
+#1)Make a temperature profile of the same simulation
+#on a setted xy
 t_0 = T.data[32, 16, :, 1]
 t_40=T.data[32,16,:,end]
-#t_40_2=T[1].data[20,16,:,end]
 
 fig = Figure(resolution = (1200, 800))
 ax = Axis(
@@ -33,7 +36,7 @@ ax = Axis(
     title = "Secció a t=40min variant la magnitud del vent (=condicions inicials)",
 )
 
-sca1 = scatter!(ax, N2[:,:,21], zT)
+sca1 = scatter!(ax, t_0, zT)
 #sca2 = scatter!(ax, T_plot[10], zT)
 #sca0 = scatter!(ax, t_0, zT, linewidth = 0.3)
 

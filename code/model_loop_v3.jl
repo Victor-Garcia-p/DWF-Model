@@ -1,8 +1,8 @@
 #=
-Info: This file contains all the model in a loop. It reads "constants" file and uses them as arguments at the model
-to produce different simulations, each in different files (.jld2)
-Imput: Grid.jl and constants.jl
-Output: A file with the data of each simulation (.jld2)
+Info: This file contains all the model in a loop splited into functions. 
+To execute the model go to "model_execution"
+
+Imput: Grid.jl 
 =#
 
 using Printf
@@ -174,7 +174,7 @@ function build_model(layers::Vector{WaterLayer{T}};
     uᵢ(x, y, z) = sqrt(abs(Qᵘ)) * 1e-3 * Ξ(z)
 
     ## `set!` the `model` fields using functions or constants:
-    global test= set!(model,
+    set!(model,
          u = uᵢ,
          w = uᵢ,
          T = initial_temperature(layers, dTdz),
@@ -189,7 +189,7 @@ function build_model(layers::Vector{WaterLayer{T}};
        )
 
     @info "The model was built for $(length(layers)) layers, with u₁₀=$u₁₀, dTdZ=$dTdz and evaporation_rate=$evaporation_rate"
-    return model, params, test
+    return model, params
 
 end
 

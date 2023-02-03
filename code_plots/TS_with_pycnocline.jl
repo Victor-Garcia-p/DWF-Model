@@ -20,7 +20,7 @@ using GibbsSeaWater
 include("plots_functions.jl")
 
 #Load files
-names = ["model_data_sim"]
+names = ["test1","test2"]
 load_variable(names)
 
 ##
