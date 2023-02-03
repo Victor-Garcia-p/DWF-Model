@@ -14,7 +14,7 @@ using GibbsSeaWater
 
 #load the local environment of the project and custom functions
 
-@quickactivate "DWF_model"
+@quickactivate 
 include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)

@@ -36,7 +36,6 @@ keyword_arguments = [Dict(:u₁₀=>15, :dTdz=>0.04)
 
 for kwargs in keyword_arguments
     build_model(layers;kwargs...)
-    build_simulation_name(params,"t")
     prepare_simulation!(params,model)
     
     run!(simulation)

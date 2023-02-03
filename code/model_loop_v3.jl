@@ -11,6 +11,7 @@ using Oceananigans
 using Oceananigans.Units: minute, minutes, hour
 using Random
 
+@quickactivate                  #load the local environment not the global which is defauld in Julia
 include("grid_generation.jl")
 
 
