@@ -18,15 +18,15 @@ using GibbsSeaWater
 include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)
-load_file("3WM__u₁₀=0_S=37.92-38.32-38.49_dTdz=0.01_T=14.17-13.22-12.93_dim=2D_run=1200.0")
+load_file("3WM__u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_run=true")
 
-load_AOI(32,16,:,:,"S")
+load_AOI(32,16,:,:,"T")
 
 ##
 #1)Make a temperature profile of the same simulation
 #on a setted xy
 t_0 = T.data[32, 16, :, 1]
-t_40=T.data[32,16,:,end]
+t_40= T.data[32, 16, :, end]
 
 fig = Figure(resolution = (1200, 800))
 ax = Axis(

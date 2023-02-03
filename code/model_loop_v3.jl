@@ -80,7 +80,7 @@ function initial_temperature(layers::Vector{WaterLayer{T}}, dTdz) where T<:Real
     function func(z)
         for layer in layers
             if z >= -layer.max_depth
-                return layer.T + dTdz * grid.Lz * 1e-6 * Ξ(z)
+                return layer.T + dTdz * z+ dTdz * grid.Lz * 1e-6 * Ξ(z)
             end
         end
     end

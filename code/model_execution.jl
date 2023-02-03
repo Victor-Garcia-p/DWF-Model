@@ -30,8 +30,7 @@ layers = [SW_layer,LIW_layer,WMDW_layer]        #how many layers has the model?
 #defauld value. To perform more simulations just add another dictionary
 #ex: Dict(:u₁₀=>15) to create a simulation with u₁₀=>15 m/s and other values as defauld
 
-keyword_arguments = [Dict(:u₁₀=>15, :dTdz=>0.01), 
-                                          Dict(:u₁₀=>15, :dTdz=>0.02),
+keyword_arguments = [Dict(:u₁₀=>15, :dTdz=>0.04) 
                                           ]
 #
 
