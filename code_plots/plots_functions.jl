@@ -18,8 +18,8 @@ function load_file(name_defauld = "model_data_sim")
     global νₑ = FieldTimeSeries.(filepath_in, "νₑ")
     global w = FieldTimeSeries.(filepath_in, "w")
 
-    global xT, yT, zT = nodes(T)
-    global xw, yw, zw = nodes(w)
+    global xT, yT, zT = nodes(time_series.T)
+    global xw, yw, zw = nodes(time_series.w)
 
     @info "A new simulation was loaded"
     return nothing
@@ -221,8 +221,6 @@ function sequential_levels(c, clims, nlevels = 21)
     return clims, levels
 end
 nothing # hide
-
-video_filepath_out = joinpath(@__DIR__, "..", "Plots_out", "Simulations")
 
 #find the maxim and minimum of a variable
 function max_min(variable)

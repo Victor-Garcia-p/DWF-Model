@@ -24,16 +24,16 @@ struct WaterLayer{T<:Real}
     T::T
 end
 
-mutable struct ModelParameters{A<:Real, N<:Real}
+mutable struct ModelParameters{A<:Real, N<:Real,E<:Real}
     u₁₀::A
     S::String
     dTdz::N
     T::String
     dim::String
-    run::Bool
+    t::E
 
-    function ModelParameters(u₁₀::A, S::String, dTdz::N, T::String) where {A, N}
-        new{A,N}(u₁₀, S, dTdz, T, "2D", true)
+    function ModelParameters(u₁₀::A, S::String, dTdz::N, T::String,t::E) where {A, N, E}
+        new{A,N,E}(u₁₀, S, dTdz, T, "2D", t)
     end
 end
 
@@ -114,6 +114,7 @@ end
 function build_model(layers::Vector{WaterLayer{T}};
              u₁₀=10,
              dTdz=0.01,
+             t=10minutes,
              evaporation_rate=1e-3 / hour,
              ) where T <:Real
 
@@ -186,8 +187,10 @@ function build_model(layers::Vector{WaterLayer{T}};
        u₁₀,
        join(map(x->string(x.S), layers), "-"),
        dTdz,
-       join(map(x->string(x.T), layers), "-")
+       join(map(x->string(x.T), layers), "-"),
+       t
        )
+    #
 
     @info "The model was built for $(length(layers)) layers, with u₁₀=$u₁₀, dTdZ=$dTdz and evaporation_rate=$evaporation_rate"
     return model, params
@@ -207,9 +210,9 @@ end
 
 function prepare_simulation!(params,
                              model;
-                             dimension=(:, 16, :),
-                             end_time=10minutes,
+                             t=10minutes,
                              Δt=10.0,
+                             dimension=(:, 16, :),
                              simulation_prefix="3WM_")
 
     # ## Setting up a simulation
@@ -217,7 +220,7 @@ function prepare_simulation!(params,
     # We set-up a simulation with an initial time-step of 10 seconds
     # that stops at 40 minutes, with adaptive time-stepping and progress printing.
 
-    global simulation = Simulation(model, Δt = Δt, stop_time = end_time)
+    global simulation = Simulation(model, Δt = Δt, stop_time = t)
 
     # The `TimeStepWizard` helps ensure stable time-stepping
     # with a Courant-Freidrichs-Lewy (CFL) number of 1.0.

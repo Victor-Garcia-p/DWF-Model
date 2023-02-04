@@ -26,17 +26,20 @@ WMDW_layer = WaterLayer(grid.Lz, 35.0, 12.71)
 layers = [SW_layer,LIW_layer,WMDW_layer]        #how many layers has the model?
 
 
-#set the value of a constant for each simulation. If its not specified is taken as 
-#defauld value. To perform more simulations just add another dictionary
-#ex: Dict(:u₁₀=>15) to create a simulation with u₁₀=>15 m/s and other values as defauld
+#Set the value of a constant for each simulation. If it’s not specified is taken as default
+#To perform more simulations, add another dictionary 
+#ex: Dict (:u₁₀=>15) to make a simulation with u₁₀=15 m/s and other values as default
 
-keyword_arguments = [Dict(:u₁₀=>15, :dTdz=>0.04) 
+model_arguments = [Dict(:u₁₀=>15, :dTdz=>0.04), Dict(:u₁₀=>20, :dTdz=>0.04) 
                                           ]
 #
 
-for kwargs in keyword_arguments
-    build_model(layers;kwargs...)
-    prepare_simulation!(params,model)
+simulation_arguments= [Dict(:t=>20minutes)]
+
+
+for kwargs in model_arguments, kwargs2 in simulation_arguments
+    build_model(layers;kwargs...,kwargs2...)
+    prepare_simulation!(params,model;kwargs2...)
     
     run!(simulation)
 end
