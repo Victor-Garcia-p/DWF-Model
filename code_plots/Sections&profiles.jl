@@ -9,19 +9,19 @@ References: Script entirely from Oceananigans example, "ocean_wind_mixing_and_co
 =#
 #load the local environment of the project and custom functions
 
-@quickactivate 
+@quickactivate
 include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)
 load_file("3WM__u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_run=true")
 
-load_AOI(32,16,:,:,"T")
+load_AOI(32, 16, :, :, "T")
 
 ##
 #1)Make a temperature profile of the same simulation
 #on a setted xy
 t_0 = T.data[32, 16, :, 1]
-t_40= T.data[32, 16, :, end]
+t_40 = T.data[32, 16, :, end]
 
 fig = Figure(resolution = (1200, 800))
 ax = Axis(
@@ -52,7 +52,7 @@ display(fig)
 #2) Create a section, x, in a fixed t
 #note: a meridional section would be the same fixing x and not the y
 
-σ=gsw_sigma0.(Sa.data[:, 16, :, 21], T.data[:, 16, :, 21])
+σ = gsw_sigma0.(Sa.data[:, 16, :, 21], T.data[:, 16, :, 21])
 
 Tn = reshape(σ, (32, 24))
 #Sn=reshape(Sa.data[:,12,:,11],(32,32))

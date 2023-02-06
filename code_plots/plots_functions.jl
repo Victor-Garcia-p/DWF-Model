@@ -12,9 +12,9 @@ using GibbsSeaWater
 #Sa=Salinity        νₑ=viscosity
 
 function load_file(name_defauld = "model_data_sim")
-    
+
     #define the path of the model data&grid
-    grid = projectdir("code_model","grid_generation.jl")
+    grid = projectdir("code_model", "grid_generation.jl")
     include(grid)
 
     filepath_in = datadir.(name_defauld .* ".jld2")
@@ -35,15 +35,23 @@ end
 #the grid). It creates a new variable called "T_plot", "S_plot" or "w_plot" (depending of the name) with all
 #the output of the function
 
-function load_AOI(x, y, z, t, variable = "T", first_simulation = "nothing", last_simulation = "nothing")
+function load_AOI(
+    x,
+    y,
+    z,
+    t,
+    variable = "T",
+    first_simulation = "nothing",
+    last_simulation = "nothing",
+)
 
-    if first_simulation=="nothing"
-        first=1
-        last=size(T,4)
+    if first_simulation == "nothing"
+        first = 1
+        last = size(T, 4)
     else
-        first="first_simulation"
-        last="last_simulation"
-    end 
+        first = "first_simulation"
+        last = "last_simulation"
+    end
 
     if variable == "T"
         global T_plot = Any[]
@@ -226,10 +234,10 @@ function sequential_levels(c, clims, nlevels = 21)
 
     return clims, levels
 end
-nothing 
+nothing
 
 #find the maxim and minimum of a variable
 function max_min(variable)
-    return (minimum(variable),maximum(variable))
+    return (minimum(variable), maximum(variable))
 end
-nothing 
+nothing
