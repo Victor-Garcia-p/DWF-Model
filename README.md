@@ -2,7 +2,7 @@
 How to run the model?
 Use model_execution.jl to perform simulations. To do so specify the values of the constants at a Dictionary (Dict(:u₁₀=>0, :dTdz=>0.00)).
 
-If a constant is not defined it will be used as a defauld value
+If a constant is not defined it will be used as a default value
 
 How to plot the results?
 There are different types of plots available
