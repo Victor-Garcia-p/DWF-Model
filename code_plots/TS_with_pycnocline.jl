@@ -1,6 +1,3 @@
-#
-a = 7
-
 #=
 Info: The file contains all the script to create TS diagram with
 picnoclines. Although the picnoclines are coded it
@@ -20,7 +17,7 @@ using GibbsSeaWater
 include("plots_functions.jl")
 
 #Load files
-names = ["test1","test2"]
+names = ["test1", "test2"]
 load_file(names)
 
 ##
