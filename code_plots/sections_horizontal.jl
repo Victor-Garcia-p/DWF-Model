@@ -8,12 +8,12 @@ using GibbsSeaWater
 include("plots_functions.jl")
 
 #names of the files that we want to use (without .jld2)
-load_variable("DWFv2_S=35_dTdz=0.01_dim=2D_run=2400.0_u₁₀=0")
+load_file("test1")
 
-##2          
+
+##2
 #2) Create a transversal section, x, in a fixed t
 #note: a meridional section would be the same fixing x and not the y
-#It uses SI (stratification index)
 
 σ = gsw_sigma0.(Sa.data[:, :, :, 41], T.data[:, :, :, 41])
 

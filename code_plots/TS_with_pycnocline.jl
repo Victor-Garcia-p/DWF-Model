@@ -20,8 +20,8 @@ using GibbsSeaWater
 include("plots_functions.jl")
 
 #Load files
-names = ["model_data_sim"]
-load_variable(names)
+names = ["test1","test2"]
+load_file(names)
 
 ##
 #Create a TS diagrame

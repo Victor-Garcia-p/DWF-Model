@@ -1,79 +1,45 @@
 #=
-Info: The file creates a mp4 video when the data of the model is created.
-
-
-to show the evolution of 4 variables
-of the model, of a single simulation. The output will depends on the
-configuration of the simulation (ej: it will start at 10min)
+Info: The file creates a mp4 video of 4 variables of a single simulation
 
 Input: Output of a simulation (.jld2)
-Output: A video (mp4)
+Output: a .mp4 (location: DWF_model\Plots_out\Simulations)
+    
+It ends at the simulation max time and starts at a value defined 
+by the user. 
 
 References: Script entirely from Oceananigans example, "ocean_wind_mixing_and_convection"
 =#
 
-#0) Import all the package that are required
 using CairoMakie
-
 using Printf
 using Oceananigans.Units: minute, minutes, hour
+using GibbsSeaWater
 
-#2)Video of the data
 include("plots_functions.jl")
 
-#names of the files that we want to use (without .jld2)
-load_variable(
-    "3WM__u₁₀=10_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_run=68400.0",
+#names of the file that we want to use (without .jld2)
+load_file(
+    "3WM__u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=720.0"
 )
 
-#Name and path of thefile
-filepath_out = joinpath(@__DIR__, "..", "Plots_out", "Simulations")
-video_name = "3WM_long.mp4"
-
-# Turbulence visualization
-
-# We prepare for animating the flow by loading the data into
-# FieldTimeSeries and defining functions for computing colorbar limits.
+video_filepath_out = joinpath(@__DIR__, "..", "Plots_out", "Simulations")
+video_name = "3WM_test_8.mp4"
 
 
-""" Return colorbar levels equispaced between `(-clim, clim)` and encompassing the extrema of `c`. """
-function divergent_levels(c, clim, nlevels = 21)
-    cmax = maximum(abs, c)
-    levels =
-        clim > cmax ? range(-clim, stop = clim, length = nlevels) :
-        range(-cmax, stop = cmax, length = nlevels)
-
-    return (levels[1], levels[end]), levels
-end
-
-""" Return colorbar levels equispaced between `clims` and encompassing the extrema of `c`."""
-function sequential_levels(c, clims, nlevels = 21)
-    levels = range(clims[1], stop = clims[2], length = nlevels)
-    cmin, cmax = minimum(c), maximum(c)
-    cmin < clims[1] && (levels = vcat([cmin], levels))
-    cmax > clims[2] && (levels = vcat(levels, [cmax]))
-
-    return clims, levels
-end
-nothing # hide
-
-# We start the animation at ``t = 10minutes`` since things are pretty boring till then:
-
+#Set some parameters for the movie
 times = w.times
-intro = searchsortedfirst(times, 0minutes)
+intro = searchsortedfirst(times, 0minutes)      #is the film starting at 0min?
 
-# We are now ready to animate using Makie. We use Makie's `Observable` to animate
-# the data. To dive into how `Observable`s work we refer to
-# [Makie.jl's Documentation](https://makie.juliaplots.org/stable/documentation/nodes/index.html).
 
 n = Observable(intro)
 
-#change the last value to 1 to make horizontal plots
+#Load variables
 wₙ = @lift interior(w[$n], :, 1, :)
 Tₙ = @lift interior(T[$n], :, 1, :)
 Sₙ = @lift interior(Sa[$n], :, 1, :)
 νₑₙ = @lift interior(νₑ[$n], :, 1, :)
 
+#Make the figure
 fig = Figure(resolution = (1000, 500))
 
 axis_kwargs = (
@@ -87,6 +53,7 @@ ax_w = Axis(fig[2, 1]; title = "Vertical velocity", axis_kwargs...)
 ax_T = Axis(fig[2, 3]; title = "Temperature", axis_kwargs...)
 ax_S = Axis(fig[3, 1]; title = "Salinity", axis_kwargs...)
 ax_νₑ = Axis(fig[3, 3]; title = "Eddy viscocity", axis_kwargs...)
+#ax_σ = Axis(fig[3, 3]; title = "Density", axis_kwargs...)
 
 title = @lift @sprintf("t = %s", prettytime(times[$n]))
 
@@ -94,10 +61,11 @@ title = @lift @sprintf("t = %s", prettytime(times[$n]))
 #makie can manage to change the limits automaticly). But for a depth of 7
 #We need to add as otherwise it will appear the
 #error "ERROR: ArgumentError: range step cannot be zero"
-wlims = (-0.05, 0.05)
-Tlims = (12.7, 13.40)
-Slims = (37.8, 38.53)
-νₑlims = (1e-6, 5e-3)
+wlims = max_min(w.data)
+Tlims = max_min(T.data)
+Slims = max_min(Sa.data)
+νₑlims = max_min(νₑ.data)
+
 
 hm_w = heatmap!(ax_w, xw, zw, wₙ; colormap = :balance, colorrange = wlims)
 Colorbar(fig[2, 2], hm_w; label = "m s⁻¹")
@@ -111,7 +79,10 @@ Colorbar(fig[3, 2], hm_S; label = "g / kg")
 hm_νₑ = heatmap!(ax_νₑ, xT, zT, νₑₙ; colormap = :thermal, colorrange = νₑlims)
 Colorbar(fig[3, 4], hm_νₑ; label = "m s⁻²")
 
-fig[1, 1:4] = Label(fig, title, textsize = 24, tellwidth = false)
+#hm_σ = heatmap!(ax_σ, xT, zT, σ; colormap = :thermal, colorrange = σlims)
+#Colorbar(fig[3, 4], hm_σ; label = "kg/m^3")
+
+fig[1, 1:4] = Label(fig, title, fontsize = 24, tellwidth = false)
 
 # And now record a movie.
 
@@ -119,7 +90,8 @@ frames = intro:length(times)
 
 @info "Making a motion picture of ocean wind mixing and convection..."
 
-record(fig, joinpath(filepath_out, video_name), frames, framerate = 8) do i
+##
+record(fig, joinpath(video_filepath_out, video_name), frames, framerate = 8) do i
     msg = string("Plotting frame ", i, " of ", frames[end])
     print(msg * " \r")
     n[] = i

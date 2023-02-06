@@ -1,32 +1,50 @@
 #=
-Info: This file has all the functions that are used in different files to 
-visualizate the data of the model (.jld2)
+Info: Functions used in all plot files
 =#
+using DrWatson
+using CairoMakie
+using Oceananigans
+using Oceananigans.Units: minute, minutes, hour
+using GibbsSeaWater
 
-#load drom a file TS variables, grid and position of the variables in the grid
-#ir requires an argument, name, with the name of all the files
+#Load a single file and its variables 
+#T=Temperature      w=vertical velocity
+#Sa=Salinity        νₑ=viscosity
 
-function load_variable(name_defauld = "model_data_sim")
+function load_file(name_defauld = "model_data_sim")
+    
     #define the path of the model data&grid
-    grid = joinpath(@__DIR__, "..", "code", "grid_generation.jl")
+    grid = projectdir("code_model","grid_generation.jl")
     include(grid)
-    filepath_in = joinpath.(@__DIR__, "..", "data", name_defauld .* ".jld2")
+
+    filepath_in = datadir.(name_defauld .* ".jld2")
 
     global Sa = FieldTimeSeries.(filepath_in, "S")
     global T = FieldTimeSeries.(filepath_in, "T")
     global νₑ = FieldTimeSeries.(filepath_in, "νₑ")
     global w = FieldTimeSeries.(filepath_in, "w")
 
-    global xT, yT, zT = nodes(T[1])
-    global xw, yw, zw = nodes(w[1])
+    global xT, yT, zT = nodes(T)
+    global xw, yw, zw = nodes(w)
 
+    @info "A new simulation was loaded"
     return nothing
 end
 
 #This function loads a variable in a setted location (ex: position x,y of
 #the grid). It creates a new variable called "T_plot", "S_plot" or "w_plot" (depending of the name) with all
 #the output of the function
-function load_AOI(x, y, z, t, first = 1, last = 2, variable = "T")
+
+function load_AOI(x, y, z, t, variable = "T", first_simulation = "nothing", last_simulation = "nothing")
+
+    if first_simulation=="nothing"
+        first=1
+        last=size(T,4)
+    else
+        first="first_simulation"
+        last="last_simulation"
+    end 
+
     if variable == "T"
         global T_plot = Any[]
         for i = first:last
@@ -54,6 +72,8 @@ function load_AOI(x, y, z, t, first = 1, last = 2, variable = "T")
             push!(w_plot, w_interest)
         end
     end
+
+    @info "A new AOU for $variable was created with the name $variable _plot"
 end
 
 #function to add contours with the name above to create isopicnals, isotermals...
@@ -180,7 +200,36 @@ function name_concatenation(first_simulation, last_simulation)
 
         #Create the name of the file
         params = name(u₁₀[i], dTdz[i], S[i], dim, end_time[i])
-        file = savename("DWF_v2", params)
+        file = savename("DWF", params)
         push!(files, file)
     end
 end
+
+
+#Functions of the movie file
+""" Return colorbar levels equispaced between `(-clim, clim)` and encompassing the extrema of `c`. """
+function divergent_levels(c, clim, nlevels = 21)
+    cmax = maximum(abs, c)
+    levels =
+        clim > cmax ? range(-clim, stop = clim, length = nlevels) :
+        range(-cmax, stop = cmax, length = nlevels)
+
+    return (levels[1], levels[end]), levels
+end
+
+""" Return colorbar levels equispaced between `clims` and encompassing the extrema of `c`."""
+function sequential_levels(c, clims, nlevels = 21)
+    levels = range(clims[1], stop = clims[2], length = nlevels)
+    cmin, cmax = minimum(c), maximum(c)
+    cmin < clims[1] && (levels = vcat([cmin], levels))
+    cmax > clims[2] && (levels = vcat(levels, [cmax]))
+
+    return clims, levels
+end
+nothing 
+
+#find the maxim and minimum of a variable
+function max_min(variable)
+    return (minimum(variable),maximum(variable))
+end
+nothing 
