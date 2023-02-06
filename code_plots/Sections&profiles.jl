@@ -7,11 +7,6 @@ Output: A video (mp4)
 References: Script entirely from Oceananigans example, "ocean_wind_mixing_and_convection"
 
 =#
-using DrWatson
-using CairoMakie
-using Oceananigans
-using GibbsSeaWater
-
 #load the local environment of the project and custom functions
 
 @quickactivate 

@@ -19,7 +19,7 @@ include("plots_functions.jl")
 
 #names of the file that we want to use (without .jld2)
 load_file(
-    "3WM__u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=720.0",
+    "3WM__u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=720.0"
 )
 
 video_filepath_out = joinpath(@__DIR__, "..", "Plots_out", "Simulations")

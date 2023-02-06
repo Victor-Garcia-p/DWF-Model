@@ -18,10 +18,9 @@ run=simulation time (s)
 
 include("model_loop_v3.jl")
 
-SW_layer = WaterLayer(10.0, 35.0, 13.18)    
-LIW_layer = WaterLayer(20.0, 35.0, 13.38)
-WMDW_layer = WaterLayer(grid.Lz, 35.0, 12.71)
-
+SW_layer = WaterLayer(10.0, 37.95, 13.18)
+LIW_layer = WaterLayer(20.0, 38.54, 13.38)
+WMDW_layer = WaterLayer(grid.Lz, 38.41, 12.71)
 
 layers = [SW_layer,LIW_layer,WMDW_layer]        #how many layers has the model?
 
@@ -30,7 +29,7 @@ layers = [SW_layer,LIW_layer,WMDW_layer]        #how many layers has the model?
 #To perform more simulations, add another dictionary 
 #ex: Dict (:u₁₀=>15) to make a simulation with u₁₀=15 m/s and other values as default
 
-model_arguments = [Dict(:u₁₀=>15, :dTdz=>0.04), Dict(:u₁₀=>20, :dTdz=>0.04) 
+model_arguments = [Dict(:u₁₀=>0, :dTdz=>0.00) 
                                           ]
 #
 

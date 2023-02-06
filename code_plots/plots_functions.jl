@@ -1,6 +1,11 @@
 #=
 Info: Functions used in all plot files
 =#
+using DrWatson
+using CairoMakie
+using Oceananigans
+using Oceananigans.Units: minute, minutes, hour
+using GibbsSeaWater
 
 #Load a single file and its variables 
 #T=Temperature      w=vertical velocity
@@ -9,17 +14,18 @@ Info: Functions used in all plot files
 function load_file(name_defauld = "model_data_sim")
     
     #define the path of the model data&grid
-    grid = joinpath(cd(pwd, ".."),"code", "grid_generation.jl")
+    grid = projectdir("code_model","grid_generation.jl")
     include(grid)
-    filepath_in = joinpath.(cd(pwd, ".."),"data", name_defauld .* ".jld2")
+
+    filepath_in = datadir.(name_defauld .* ".jld2")
 
     global Sa = FieldTimeSeries.(filepath_in, "S")
     global T = FieldTimeSeries.(filepath_in, "T")
     global νₑ = FieldTimeSeries.(filepath_in, "νₑ")
     global w = FieldTimeSeries.(filepath_in, "w")
 
-    global xT, yT, zT = nodes(time_series.T)
-    global xw, yw, zw = nodes(time_series.w)
+    global xT, yT, zT = nodes(T)
+    global xw, yw, zw = nodes(w)
 
     @info "A new simulation was loaded"
     return nothing
@@ -220,9 +226,10 @@ function sequential_levels(c, clims, nlevels = 21)
 
     return clims, levels
 end
-nothing # hide
+nothing 
 
 #find the maxim and minimum of a variable
 function max_min(variable)
     return (minimum(variable),maximum(variable))
 end
+nothing 
