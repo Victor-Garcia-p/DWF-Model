@@ -24,9 +24,10 @@ for i = 1:24, j = 1:24
     push!(matrix, σ[i, j, :])
 end
 
-matrix_convert = transpose(reshape(matrix, 24, 24))
+matrix_convert = transpose(reshape(N2, 24, 24))
 S_index = SI.(matrix_convert, 24)
 
+##
 #Plot the figure
 fig = Figure(resolution = (1200, 800))
 
@@ -34,7 +35,7 @@ axis_kwargs = (xlabel = "x (m)", ylabel = "z (m)")
 #
 
 ax_T = Axis(fig[1, 1]; title = "Stratification Index", axis_kwargs...)
-hm_T = heatmap!(ax_T, xT, yT, S_index, colormap = :thermal)
+hm_T = heatmap!(ax_T, xT, yT, N2, colormap = :thermal)
 Colorbar(fig[1, 2], hm_T; label = "Stratification Index")
 
 display(fig)
