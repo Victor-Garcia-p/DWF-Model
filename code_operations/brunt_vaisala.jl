@@ -23,12 +23,14 @@ load_file("3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.0_T=13.18-13.38-12.71_dim=2
 Δσ_1D=Any[]
 max_time=size(σ,3)
 
-for i=1:grid.Nx,j=1:grid.Nz-1, t=1:max_time
-    diff=(σ[i,j+1,t]-σ[i,j,t])/grid.Δzᵃᵃᶜ[j-1]
-    push!(Δσ_1D,diff)
+for t=1:max_time
+    for i=1:grid.Nx,j=1:grid.Nz-1
+        diff=(σ[i,j+1,t]-σ[i,j,t])/grid.Δzᵃᵃᶜ[j-1]
+        push!(Δσ_1D,diff)
+    end
 end
 
-Δσ=reshape(Δσ_1D,(grid.Nx,grid.Nz-1,max_time))          #Density gradient
+Δσ=reshape(Δσ_1D,(grid.Nz-1,grid.Nx,max_time))          #Density gradient
 
 #Calculate brunt vaisala
 #N=sqrt.((g/ρₒ)*Δσ)
@@ -69,14 +71,10 @@ max_N2t=maximum(N2t)
 
 a=(max_N2t,max_N2[1])
 
-##3)Stadistics
-#We need to know if the simulation mean of N2 is the same of N2_teoric, in this case
-#the simulation would be correct
-
-
 ##Plot
-N2_convert = transpose(reshape(N2[:,:,2], 32, 23))
-#S_index = SI.(matrix_convert, 24)
+N2_convert = transpose(reshape(N2[:,:,9], 23, 32))
+
+Δσ_convert = reshape(Δσ[:,:,21], 32,23)
 
 #Plot the figure
 fig = Figure(resolution = (1200, 800))
@@ -85,7 +83,21 @@ axis_kwargs = (xlabel = "x (m)", ylabel = "z (m)")
 #
 
 ax_T = Axis(fig[1, 1]; title = "Stratification Index", axis_kwargs...)
-hm_T = heatmap!(ax_T, xT, yT, N2_convert, colormap = :thermal)
+hm_T = heatmap!(ax_T, xT, zT, N2_convert, colormap = :thermal)
 Colorbar(fig[1, 2], hm_T; label = "Stratification Index")
+
+display(fig)
+
+
+##Plot_2
+fig = Figure(resolution = (1200, 800))
+ax = Axis(
+    fig[1, 1],
+    ylabel = "Profunditat (m)",
+    xlabel = "N2 (s-2)",
+    title = "Secció a x=1 i t=20min de Brunt Vaisala máxim",
+)
+
+sca1 = scatterlines!(ax, N2[:,1,21], zT[1:23])
 
 display(fig)

@@ -7,21 +7,68 @@ Output: A video (mp4)
 References: Script entirely from Oceananigans example, "ocean_wind_mixing_and_convection"
 
 =#
-#load the local environment of the project and custom functions
+using CairoMakie
+using Printf
+using Oceananigans.Units: minute, minutes, hour
+using GibbsSeaWater
+using DrWatson
 
-@quickactivate
+#1) el fitxer jld2
+#2) el nom de la variable que vols representar 
+#3) altres parametres especifics del tipus de plot com a keyword arguments (time-step del video, etc). O alguna cosa semblant a aquesta.
+
+@quickactivate                  #load the local environment of the project and custom functions
 include("plots_functions.jl")
 
-#names of the files that we want to use (without .jld2)
-load_file("3WM__u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_run=true")
+#plot test
+load_grid()
 
-load_AOI(32, 16, :, :, "T")
+#names of the files (without .jld2)
+names=["3WM__u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0"
+,"3WM__u₁₀=20_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0"]
+
+load_file(names)
+
+load_AOI(32, 16, :, 21, T)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ##
 #1)Make a temperature profile of the same simulation
 #on a setted xy
-t_0 = T.data[32, 16, :, 1]
-t_40 = T.data[32, 16, :, end]
+
+function profile(x=2)
+
+    fig = Figure(resolution = (1200, 800))
+    ax = Axis(
+    fig[1, 1],
+    ylabel = "Depth (m)",
+    xlabel = "Temperature(C)",
+    title = "Secció a t=40min variant la magnitud del vent (=condicions inicials)",
+    )
+
+    return sca1 = scatter!(ax, t_0, zT)
+    
+end
+
+#t_0 = T[2].data[32, 16, :, end]
+#t_02 = T[1].data[32, 16, :, end]
+
+t_0 = variable_plot[1]
+t_02 = T[1].data[32, 16, :, 3]
+
 
 fig = Figure(resolution = (1200, 800))
 ax = Axis(
@@ -32,7 +79,7 @@ ax = Axis(
 )
 
 sca1 = scatter!(ax, t_0, zT)
-#sca2 = scatter!(ax, T_plot[10], zT)
+sca2 = scatter!(ax, t_02, zT)
 #sca0 = scatter!(ax, t_0, zT, linewidth = 0.3)
 
 #=

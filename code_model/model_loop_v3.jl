@@ -81,7 +81,11 @@ function initial_temperature(layers::Vector{WaterLayer{T}}, dTdz) where T<:Real
     function func(z)
         for layer in layers
             if z >= -layer.max_depth
-                return layer.T + dTdz * z+ dTdz * grid.Lz * 1e-6 * Ξ(z)
+                if z >= -SW_layer.max_depth/2
+                    return SW_layer.T + dTdz * z+ dTdz * grid.Lz * 1e-6 * Ξ(z)
+                end
+
+                return layer.T 
             end
         end
     end
@@ -115,7 +119,7 @@ function build_model(layers::Vector{WaterLayer{T}};
              u₁₀=10,
              dTdz=0.01,
              t=10minutes,
-             evaporation_rate=1e-3 / hour,
+             evaporation_rate=0,
              ) where T <:Real
 
 

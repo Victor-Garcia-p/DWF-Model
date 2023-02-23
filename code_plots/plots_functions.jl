@@ -7,16 +7,17 @@ using Oceananigans
 using Oceananigans.Units: minute, minutes, hour
 using GibbsSeaWater
 
+#grid load
+function load_grid(path=projectdir("code_model", "grid_generation.jl"))
+    include(path)
+    @info "Grid was loaded from $path"
+end
+
 #Load a single file and its variables 
 #T=Temperature      w=vertical velocity
 #Sa=Salinity        νₑ=viscosity
 
 function load_file(name_defauld = "model_data_sim")
-
-    #define the path of the model data&grid
-    grid = projectdir("code_model", "grid_generation.jl")
-    include(grid)
-
     filepath_in = datadir.(name_defauld .* ".jld2")
 
     global Sa = FieldTimeSeries.(filepath_in, "S")
@@ -24,8 +25,8 @@ function load_file(name_defauld = "model_data_sim")
     global νₑ = FieldTimeSeries.(filepath_in, "νₑ")
     global w = FieldTimeSeries.(filepath_in, "w")
 
-    global xT, yT, zT = nodes(T)
-    global xw, yw, zw = nodes(w)
+    global xT, yT, zT = nodes(T[1])
+    global xw, yw, zw = nodes(w[1])
 
     @info "A new simulation was loaded"
     return nothing
@@ -40,49 +41,21 @@ function load_AOI(
     y,
     z,
     t,
-    variable = "T",
-    first_simulation = "nothing",
-    last_simulation = "nothing",
-)
+    variable = T,
+    first_simulation = 1,
+    last_simulation = size(variable, 1))
 
-    if first_simulation == "nothing"
-        first = 1
-        last = size(T, 4)
-    else
-        first = "first_simulation"
-        last = "last_simulation"
+    global variable_plot = Any[]
+
+    for i = first_simulation:last_simulation
+        variable_interest = variable[i].data[x, y, z, t]
+
+        push!(variable_plot, variable_interest)
     end
 
-    if variable == "T"
-        global T_plot = Any[]
-        for i = first:last
-            T_interest = T[i].data[x, y, z, t]
-
-            push!(T_plot, T_interest)
-        end
-    end
-
-    if variable == "S"
-        global S_plot = Any[]
-        for i = first:last
-            S_interest = Sa[i].data[x, y, z, t]
-
-            push!(S_plot, S_interest)
-        end
-    end
-
-
-    if variable == "w"
-        global w_plot = Any[]
-        for i = first:last
-            w_interest = w[i].data[x, y, z, t]
-
-            push!(w_plot, w_interest)
-        end
-    end
-
-    @info "A new AOU for $variable was created with the name $variable _plot"
+    @info "A new AOU was loaded"
 end
+
 
 #function to add contours with the name above to create isopicnals, isotermals...
 function isovariable_test(ax, S_trans_1, T_trans_1, σ, isopicnals_range = 23:0.5:26)

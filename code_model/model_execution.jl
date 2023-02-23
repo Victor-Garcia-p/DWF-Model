@@ -29,12 +29,11 @@ layers = [SW_layer,LIW_layer,WMDW_layer]        #how many layers has the model?
 #To perform more simulations, add another dictionary 
 #ex: Dict (:u₁₀=>15) to make a simulation with u₁₀=15 m/s and other values as default
 
-model_arguments = [Dict(:u₁₀=>0, :dTdz=>0.00) 
+model_arguments = [Dict(:u₁₀=>0, :dTdz=>0.01) 
                                           ]
 #
 
-simulation_arguments= [Dict(:t=>20minutes)]
-
+simulation_arguments= [Dict(:t=>1440minutes)]
 
 for kwargs in model_arguments, kwargs2 in simulation_arguments
     build_model(layers;kwargs...,kwargs2...)
