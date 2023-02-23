@@ -217,7 +217,7 @@ function prepare_simulation!(params,
                              t=10minutes,
                              Δt=10.0,
                              dimension=(:, 16, :),
-                             simulation_prefix="3WM_")
+                             simulation_prefix="3WM")
 
     # ## Setting up a simulation
     #

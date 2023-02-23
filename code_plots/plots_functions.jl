@@ -7,11 +7,12 @@ using Oceananigans
 using Oceananigans.Units: minute, minutes, hour
 using GibbsSeaWater
 
-#grid load
+#Grid load
 function load_grid(path=projectdir("code_model", "grid_generation.jl"))
     include(path)
-    @info "Grid was loaded from $path"
+    @info "Grid loaded from $path"
 end
+
 
 #Load a single file and its variables 
 #T=Temperature      w=vertical velocity
@@ -28,8 +29,25 @@ function load_file(name_defauld = "model_data_sim")
     global xT, yT, zT = nodes(T[1])
     global xw, yw, zw = nodes(w[1])
 
-    @info "A new simulation was loaded"
+    number_simulations=size(T,1)
+
+    @info "$number_simulations simulations loaded"
     return nothing
+end
+
+#Return parameters of the simulations 
+function read_variables(filenames)
+
+    global simulation_params=Any[]
+
+    last_file=size(file_names,1)
+
+    for i in 1: last_file
+        kwargs_variables=parse_savename(filenames[i])
+        push!(simulation_params,kwargs_variables[2])
+    end 
+
+    @info "New variable 'simulation_params' defined with parameters for $last_file simulations"
 end
 
 #This function loads a variable in a setted location (ex: position x,y of
@@ -53,7 +71,7 @@ function load_AOI(
         push!(variable_plot, variable_interest)
     end
 
-    @info "A new AOU was loaded"
+    @info "New variable 'variable_plot' setted at x=$x y=$y z=$z t=$t"
 end
 
 

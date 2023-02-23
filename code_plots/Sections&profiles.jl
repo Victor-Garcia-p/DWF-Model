@@ -1,16 +1,12 @@
 #=
-Info: The file can make profiles, in a given location, and sections of the model
+Info: 
 
-Input: Output of a simulation (.jld2)
-Output: A video (mp4)
+Input: 
+Output: 
 
-References: Script entirely from Oceananigans example, "ocean_wind_mixing_and_convection"
-
+References: 
 =#
-using CairoMakie
-using Printf
-using Oceananigans.Units: minute, minutes, hour
-using GibbsSeaWater
+
 using DrWatson
 
 #1) el fitxer jld2
@@ -18,36 +14,22 @@ using DrWatson
 #3) altres parametres especifics del tipus de plot com a keyword arguments (time-step del video, etc). O alguna cosa semblant a aquesta.
 
 @quickactivate                  #load the local environment of the project and custom functions
-include("plots_functions.jl")
 
-#plot test
+include("plots_functions.jl")
 load_grid()
 
 #names of the files (without .jld2)
-names=["3WM__u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0"
-,"3WM__u₁₀=20_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0"]
+file_names=["3WM_u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0",
+"3WM_u₁₀=20_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0"]
 
-load_file(names)
+
+load_file(file_names)
+read_variables(file_names)
 
 load_AOI(32, 16, :, 21, T)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ##
-#1)Make a temperature profile of the same simulation
-#on a setted xy
+
 
 function profile(x=2)
 
