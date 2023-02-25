@@ -1,22 +1,58 @@
 function profile(
-    x_label="my variable (units)",
-    y_label="Depth (m)",
-    title="a simple plot")
-    
-    fig = Figure(resolution = (1200, 800))
-
-    ax = Axis(
-    fig[1, 1],
-    ylabel = y_label,
-    xlabel = x_label,
-    title = title,
+    x_variable=variable_plot,
+    y_variable=zT,
+    dim=[1,1],
+    overwrite=false
     )
 
-    for i in 1:size(variable_plot,1)
-        scatterlines!(ax, variable_plot[i], zT)
+    if dim==[1,1] && overwrite==true
+        global fig = Figure()
     end
 
-    display(fig)    
+    fig[dim[1],dim[2]] = GridLayout()
+
+    ax=Axis(fig[dim[1],dim[2]])
+
+    for i in eachindex(x_variable)
+
+        scatterlines!(ax, x_variable[i], zT)
+    end    
+
+    fig
 end
 
-profile()
+#file of plots
+
+themes=[
+Theme(
+    Axis = (
+        xlabel="T (ºC)",
+        ylabel="Depth (m)",
+        title = "PLOT1"
+)),
+
+Theme(
+    Axis = (
+        xlabel="T (ºC)",
+        ylabel="Depth (m)",
+        title = "PLOT2"
+    ))
+]
+
+##
+profile(variable_plot,zT,[1,1],true)
+
+with_theme(themes[2]) do
+
+    profile(variable_plot,zT,[1,2])
+    
+end
+
+with_theme(themes[1]) do
+
+    profile(variable_plot,zT,[1,1])
+    
+end
+
+display(fig)
+

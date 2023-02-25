@@ -9,10 +9,6 @@ References:
 
 using DrWatson
 
-#1) el fitxer jld2
-#2) el nom de la variable que vols representar 
-#3) altres parametres especifics del tipus de plot com a keyword arguments (time-step del video, etc). O alguna cosa semblant a aquesta.
-
 @quickactivate                  #load the local environment of the project and custom functions
 
 include("plots_functions.jl")
@@ -22,60 +18,80 @@ load_grid()
 file_names=["3WM_u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0",
 "3WM_u₁₀=20_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0"]
 
-
 load_file(file_names)
 read_variables(file_names)
-
 load_AOI(32, 16, :, 21, T)
 
-##
-
-
-function profile(x=2)
-
-    fig = Figure(resolution = (1200, 800))
-    ax = Axis(
-    fig[1, 1],
-    ylabel = "Depth (m)",
-    xlabel = "Temperature(C)",
-    title = "Secció a t=40min variant la magnitud del vent (=condicions inicials)",
+#Profile plot
+plot_theme_1 = Theme(
+    Axis = (
+        xlabel="T (ºC)",
+        ylabel="Depth (m)",
+        title = "PLOT1",
+        
+        backgroundcolor = :gray90,
+        leftspinevisible = false,
+        rightspinevisible = false,
+        bottomspinevisible = false,
+        topspinevisible = false,
+        xgridcolor = :white,
+        ygridcolor = :white,
     )
+)
 
-    return sca1 = scatter!(ax, t_0, zT)
+plot_theme_2 = Theme(
+    Axis = (
+        xlabel="T (ºC)",
+        ylabel="Depth (m)",
+        title = "PLOT2",
+        
+        backgroundcolor = :gray90,
+        leftspinevisible = false,
+        rightspinevisible = false,
+        bottomspinevisible = false,
+        topspinevisible = false,
+        xgridcolor = :white,
+        ygridcolor = :white,
+    )
+)
+
+profile(variable_plot,zT,[1,1],true)
+
+with_theme(plot_theme_2) do
+
+    profile(variable_plot,zT,[1,1])
     
 end
 
-#t_0 = T[2].data[32, 16, :, end]
-#t_02 = T[1].data[32, 16, :, end]
+with_theme(plot_theme_1) do
 
-t_0 = variable_plot[1]
-t_02 = T[1].data[32, 16, :, 3]
-
-
-fig = Figure(resolution = (1200, 800))
-ax = Axis(
-    fig[1, 1],
-    ylabel = "Depth (m)",
-    xlabel = "Temperature(C)",
-    title = "Secció a t=40min variant la magnitud del vent (=condicions inicials)",
-)
-
-sca1 = scatter!(ax, t_0, zT)
-sca2 = scatter!(ax, t_02, zT)
-#sca0 = scatter!(ax, t_0, zT, linewidth = 0.3)
-
-#=
-#axislegend(
-    ax,
-    [sca0, sca1, sca2],
-    ["Initial situation", "5", "10"],
-    "Modul velocitat vent (m/s)",
-    position = :rb,
-    orientation = :horizontal,
-)
-=#
+    profile(variable_plot,zT,[1,1])
+    
+end
 
 display(fig)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ##2          
 #2) Create a section, x, in a fixed t
