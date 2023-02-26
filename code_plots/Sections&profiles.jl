@@ -20,77 +20,55 @@ file_names=["3WM_u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2
 
 load_file(file_names)
 read_variables(file_names)
-load_AOI(32, 16, :, 21, T)
+load_AOI(:, 16, :, 21, T)
 
+
+##
 #Profile plot
-plot_theme_1 = Theme(
-    Axis = (
-        xlabel="T (ºC)",
-        ylabel="Depth (m)",
-        title = "PLOT1",
-        
-        backgroundcolor = :gray90,
-        leftspinevisible = false,
-        rightspinevisible = false,
-        bottomspinevisible = false,
-        topspinevisible = false,
-        xgridcolor = :white,
-        ygridcolor = :white,
-    )
-)
+themes=[
+    Theme(
+        Axis = (
+            xlabel="T (ºC)",
+            ylabel="Depth (m)",
+            title = "PLOT1"),
 
-plot_theme_2 = Theme(
-    Axis = (
-        xlabel="T (ºC)",
-        ylabel="Depth (m)",
-        title = "PLOT2",
-        
-        backgroundcolor = :gray90,
-        leftspinevisible = false,
-        rightspinevisible = false,
-        bottomspinevisible = false,
-        topspinevisible = false,
-        xgridcolor = :white,
-        ygridcolor = :white,
-    )
-)
+        Colorbar=(label = "Temperature ᵒC",ticksize=16, tickalign=1, spinewidth=0.5),
+        Legend=(framevisible = false)
 
-profile(variable_plot,zT,[1,1],true)
-
-with_theme(plot_theme_2) do
-
-    profile(variable_plot,zT,[1,1])
+    ),
     
-end
+    Theme(
+        Axis = (
+            xlabel="T (ºC)",
+            ylabel="Depth (m)",
+            title = "PLOT2"
+        ))
+    ]
 
-with_theme(plot_theme_1) do
 
-    profile(variable_plot,zT,[1,1])
+    ##
+    with_theme(themes[1]) do
     
-end
-
-display(fig)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        profile(variable_plot,zT,[1,1])
+        
+    end
+    
+    ##
+    profile(variable_plot,zT,[1,1],true)
+    
+    with_theme(themes[2]) do
+    
+        profile(variable_plot,zT,[1,2])
+        
+    end
+    
+    with_theme(themes[1]) do
+    
+        profile(variable_plot,zT,[1,1])
+        
+    end
+    
+    display(fig)
 
 
 ##2          
