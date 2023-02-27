@@ -1,5 +1,40 @@
 #first executate the file to load data
 
+#location
+#variables
+#number of simulations
+
+movie_arguments = [Dict(:variables=>[w[1],T[1],Sa[1],νₑ[1]],
+                        :y=>1)]
+#
+
+##
+function movie_AOU(x=:,
+    y=1,
+    z=:,
+    variables=[w[1],T[1],Sa[1],νₑ[1]],
+    start_time=0minutes)
+
+    times = variables[1].times
+    intro = searchsortedfirst(times, start_time) 
+    
+    n = Observable(intro)
+
+    #Load variables
+    global movie_variables=Any[]
+
+    for i in variables
+        variable=@lift interior(i[$n], x, y, z)
+
+        push!(movie_variables,variable)
+    end
+end
+
+movie_AOU()
+
+##
+
+
 video_filepath_out = joinpath(@__DIR__, "..", "Plots_out", "Simulations")
 video_name = "3WM_test_9.mp4"
 
@@ -9,13 +44,7 @@ times = w.times
 intro = searchsortedfirst(times, 0minutes)      #is the film starting at 0min?
 
 
-n = Observable(intro)
 
-#Load variables
-wₙ = @lift interior(w[$n], :, 1, :)
-Tₙ = @lift interior(T[$n], :, 1, :)
-Sₙ = @lift interior(Sa[$n], :, 1, :)
-νₑₙ = @lift interior(νₑ[$n], :, 1, :)
 
 #Make the figure
 fig = Figure(resolution = (1000, 500))
