@@ -4,12 +4,10 @@
 #variables
 #number of simulations
 
-movie_arguments = [Dict(:variables=>[w[1],T[1],Sa[1],νₑ[1]],
-                        :y=>1)]
-#
 
-##
-function movie_AOU(x=:,
+movie_arguments = Dict(:variables=>[w[1],T[1],Sa[1],νₑ[1]])
+
+function movie_AOU(;x=:,
     y=1,
     z=:,
     variables=[w[1],T[1],Sa[1],νₑ[1]],
@@ -30,7 +28,8 @@ function movie_AOU(x=:,
     end
 end
 
-movie_AOU()
+movie_AOU(;movie_arguments...)
+
 
 ##
 
