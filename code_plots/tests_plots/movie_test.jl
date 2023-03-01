@@ -37,6 +37,7 @@ end
 movie_AOU(;movie_arguments...)
 
 ##
+
 function build_movie(variables=movie_variables,
     video_filepath_out = projectdir("Plots_out", "Simulations"),
     video_name = "3WM_test_11.mp4")
@@ -86,7 +87,6 @@ end
 
 build_movie()
 
-
 ##
 function record_movie(figure=fig,
     video_filepath_out = projectdir("Plots_out", "Simulations"),
@@ -106,3 +106,20 @@ function record_movie(figure=fig,
 end
 
 record_movie()
+
+##
+function movie_name(prefix="t", file_names=file_names)
+    
+    base_name=chop.(file_names,head = 4, tail = 0)
+
+    movie_name = string(prefix,base_name)
+    #@info "Movie filename: $movie_name"
+
+end
+
+
+##
+base_name=chop.(file_names,head = 4, tail = 0)
+
+
+
