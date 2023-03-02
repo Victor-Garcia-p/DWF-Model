@@ -36,19 +36,19 @@ function load_file(name_defauld = "model_data_sim")
 end
 
 #Return parameters of the simulations 
-function read_variables(filenames)
+function read_variables(filename)
 
     global simulation_params=Any[]
 
-    last_file=size(file_names,1)
+    for i in eachindex(filename)
 
-    for i in 1: last_file
-        kwargs_variables=parse_savename(filenames[i])
+        kwargs_variables=parse_savename(filename[i])
         push!(simulation_params,kwargs_variables[2])
     end 
 
-    @info "New variable 'simulation_params' defined with parameters for $last_file simulations"
+    @info "New variable 'simulation_params' defined with parameters for simulations"
 end
+
 
 #This function loads a variable in a setted location (ex: position x,y of
 #the grid). It creates a new variable called "T_plot", "S_plot" or "w_plot" (depending of the name) with all
@@ -59,13 +59,11 @@ function load_AOI(
     y,
     z,
     t,
-    variable = T,
-    first_simulation = 1,
-    last_simulation = size(variable, 1))
+    variable = T)
 
     global variable_plot = Any[]
 
-    for i = first_simulation:last_simulation
+    for i in eachindex(variable)
         variable_interest = variable[i].data[x, y, z, t]
 
         push!(variable_plot, variable_interest)
@@ -227,8 +225,4 @@ function sequential_levels(c, clims, nlevels = 21)
 end
 nothing
 
-#find the maxim and minimum of a variable
-function max_min(variable)
-    return (minimum(variable), maximum(variable))
-end
-nothing
+
