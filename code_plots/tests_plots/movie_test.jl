@@ -32,15 +32,23 @@ function movie_AOU(;x=:,
 
     number_variables=size(variables,1)
     movie_variables=reshape(movie_variables,(number_variables,:))  #reshape the matrix
+
+    @info "Movie time is prepared for simulations"
 end
 
-movie_AOU(;movie_arguments...)
+function movie_name(prefix="MOV", file_names=file_names[1])
+    
+    base_name=chop.(file_names,head = 4, tail = 0)
 
-##
+    global mov_name = prefix.* "_".*base_name
+    
+    @info "Movie filename $mov_name"
+
+end
 
 function build_movie(variables=movie_variables,
-    video_filepath_out = projectdir("Plots_out", "Simulations"),
-    video_name = "3WM_test_11.mp4")
+    video_name = "3WM_test_11.mp4",
+    video_filepath_out = projectdir("Plots_out", "Simulations"))
     
     #Make the figure
     global fig = Figure(resolution = (1000, 500))
@@ -82,44 +90,50 @@ function build_movie(variables=movie_variables,
     Colorbar(fig[3, 4], hm_νₑ; label = "m s⁻²")
     
     fig[1, 1:4] = Label(fig, title, fontsize = 24, tellwidth = false)
+
+    @info "Finished plotting"
         
 end
 
-build_movie()
-
-##
-function record_movie(figure=fig,
-    video_filepath_out = projectdir("Plots_out", "Simulations"),
-    video_name="3WM_test_11.mp4")
+function record_movie(video_filepath_out = projectdir("Plots_out", "Simulations"))
     
     frames = intro:length(times)
 
     @info "Making a motion picture of ocean wind mixing and convection..."
-
-    record(fig, joinpath(video_filepath_out, video_name), frames, framerate = 8) do i
+    record(fig, joinpath(video_filepath_out, mov_name * ".mp4"), frames, framerate = 8) do i
         msg = string("Plotting frame ", i, " of ", frames[end])
         print(msg * " \r")
         n[] = i
     end
     nothing #hide
-    
 end
 
-record_movie()
-
-##
-function movie_name(prefix="t", file_names=file_names)
-    
-    base_name=chop.(file_names,head = 4, tail = 0)
-
-    movie_name = string(prefix,base_name)
-    #@info "Movie filename: $movie_name"
+for i in eachindex(file_names)
+    movie_AOU(;movie_arguments...)
+    movie_name(file_names[i])
+    build_movie()
+    record_movie()
 
 end
 
-
 ##
-base_name=chop.(file_names,head = 4, tail = 0)
+video_filepath_out = projectdir("Plots_out", "Simulations")
+
+frames = intro:length(times)
+
+@info "Making a motion picture of ocean wind mixing and convection..."
+record(fig, joinpath(video_filepath_out, mov_name * ".mp4"), frames, framerate = 8) do i
+    msg = string("Plotting frame ", i, " of ", frames[end])
+    print(msg * " \r")
+    n[] = i
+end
+nothing #hide
+
+
+
+
+
+
 
 
 

@@ -26,7 +26,7 @@ name_concatenation(1, 10)
 load_file(files)
 
 #1)Make a comparative profile of both simulations at the same location
-load_AOI(32, 2, :, 41, 1, 10, "S") #"T_plot" variable is defined with all the simulations
+#load_AOI(32, 2, :, 41, 1, 10, "S") #"T_plot" variable is defined with all the simulations
 
 ##
 fig = Figure(resolution = (1200, 800))
