@@ -31,7 +31,9 @@ themes=
         Axis = (
             xlabel="T (ºC)",
             ylabel="Depth (m)",
-            title = "PLOT1"),
+            title = "PLOT1",
+            limits = ((0, 1000), nothing)),
+            
 
         Colorbar=(label = "Temperature ᵒC",ticksize=16, tickalign=1, spinewidth=0.5)
         
@@ -40,8 +42,9 @@ themes=
 
 with_theme(themes) do
     
-    section(xT,zT,variable_plot[1],[1,1],true),
-    Colorbar(fig[1,2], my_section)     
+    section(T[2].times,zT,variable_plot[2],[1,1],true),
+    Colorbar(fig[1,2], my_section)
+    
 end
 
 fig

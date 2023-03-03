@@ -8,32 +8,29 @@ using Printf
 movie_arguments = Dict(:variables=>[w,T,Sa,νₑ])
 
 
-function movie_AOU(;x=:,
+function movie_AOU(simulation=1;x=:,
     y=1,
     z=:,
-    variables=[w[1],T[1],Sa[1],νₑ[1]],
+    variables=[w,T,Sa,νₑ],
     start_time=0minutes)
+
+    global times = variables[1][simulation].times
+    global intro = searchsortedfirst(times, start_time)      #is the film starting at 0min?
+
+
+    global n = Observable(intro)
 
     global movie_variables=Any[]
 
-    for i in eachindex(variables[1])
+    for j in eachindex(variables)
+        variable=@lift interior(variables[j][simulation][$n], x, y, z)
 
-        global times = variables[1][i].times
-        global intro = searchsortedfirst(times, start_time) 
-        
-        global n = Observable(intro)
+        push!(movie_variables,variable)
+    end   
 
-        for j in eachindex(variables)
-            variable=@lift interior(variables[j][i][$n], x, y, z)
+    number_simulations=size(file_names,1)
 
-            push!(movie_variables,variable)
-        end
-    end
-
-    number_variables=size(variables,1)
-    movie_variables=reshape(movie_variables,(number_variables,:))  #reshape the matrix
-
-    @info "Movie time is prepared for simulations"
+    @info "Movie time is prepared for $simulation / $number_simulations"
 end
 
 function movie_name(prefix="MOV", file_names=file_names[1])
@@ -109,31 +106,10 @@ function record_movie(video_filepath_out = projectdir("Plots_out", "Simulations"
 end
 
 for i in eachindex(file_names)
-    movie_AOU(;movie_arguments...)
+    movie_AOU(i;movie_arguments...)
     movie_name(file_names[i])
     build_movie()
     record_movie()
 
 end
-
-##
-video_filepath_out = projectdir("Plots_out", "Simulations")
-
-frames = intro:length(times)
-
-@info "Making a motion picture of ocean wind mixing and convection..."
-record(fig, joinpath(video_filepath_out, mov_name * ".mp4"), frames, framerate = 8) do i
-    msg = string("Plotting frame ", i, " of ", frames[end])
-    print(msg * " \r")
-    n[] = i
-end
-nothing #hide
-
-
-
-
-
-
-
-
 

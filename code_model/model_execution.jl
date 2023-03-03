@@ -16,7 +16,7 @@ dim=dimension of the simulation (2D or 3D)
 run=simulation time (s)
 =#
 
-include("model_loop_v3.jl")
+include("model_functions.jl")
 
 SW_layer = WaterLayer(10.0, 37.95, 13.18)
 LIW_layer = WaterLayer(20.0, 38.54, 13.38)
