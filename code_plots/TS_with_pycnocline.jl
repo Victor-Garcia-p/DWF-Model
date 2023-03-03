@@ -18,7 +18,7 @@ include("plots_functions.jl")
 
 #Load files
 names = ["test1", "test2"]
-load_file(names)
+load_files(names)
 
 ##
 #Create a TS diagrame

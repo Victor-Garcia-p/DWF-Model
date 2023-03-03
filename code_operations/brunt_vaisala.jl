@@ -13,7 +13,7 @@ functions=projectdir("code_plots","plots_functions.jl")
 
 include(functions)
 
-load_file("3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.0_T=13.18-13.38-12.71_dim=2D_t=1200.0")
+load_files("3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.0_T=13.18-13.38-12.71_dim=2D_t=1200.0")
 
 ##1) Brunt Vaisala for a given simulation
 
