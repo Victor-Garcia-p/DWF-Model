@@ -16,7 +16,7 @@ dim=dimension of the simulation (2D or 3D)
 run=simulation time (s)
 =#
 
-include("model_loop_v3.jl")
+include("model_functions.jl")
 
 SW_layer = WaterLayer(10.0, 37.95, 13.18)
 LIW_layer = WaterLayer(20.0, 38.54, 13.38)
@@ -29,12 +29,11 @@ layers = [SW_layer,LIW_layer,WMDW_layer]        #how many layers has the model?
 #To perform more simulations, add another dictionary 
 #ex: Dict (:u₁₀=>15) to make a simulation with u₁₀=15 m/s and other values as default
 
-model_arguments = [Dict(:u₁₀=>0, :dTdz=>0.00) 
+model_arguments = [Dict(:u₁₀=>0, :dTdz=>0.01) 
                                           ]
 #
 
-simulation_arguments= [Dict(:t=>20minutes)]
-
+simulation_arguments= [Dict(:t=>1440minutes)]
 
 for kwargs in model_arguments, kwargs2 in simulation_arguments
     build_model(layers;kwargs...,kwargs2...)
