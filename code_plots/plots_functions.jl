@@ -8,49 +8,43 @@ using Oceananigans.Units: minute, minutes, hour
 using GibbsSeaWater
 
 
-#grid loading from "grid_generation"
-function load_grid(path=projectdir("code_model", "grid_generation.jl"))
-    include(path)
-    @info "Grid loaded from $path"
-end
-
-
 #Load variables from different simulation files defined on a vector list like ["test1","test2"]
 #(T,Sa,νₑ,w)=(Temperature (C), Salinity (psu),  Viscosity (m*s^2), vertical velocity (m/s))
 #defauld simularion: Example from Oceananigans renamed using new format
 
-function load_files(name_defauld = "DEF_u₁₀=10_S=35.0_dTdz=0.01_T=20_dim=2D_t=2.400.jld2")
-    filepath_in = datadir.(name_defauld .* ".jld2")
+function load_files(name_default::String= "DEF_u₁₀=10_S=35.0_dTdz=0.01_T=20_dim=2D_t=2.400.jld2")::Dict{Symbol, Any}
+    filepath_in = joinpath(@__DIR__, "..", "data", name_default .* ".jld2")
 
-    global Sa = FieldTimeSeries.(filepath_in, "S")
-    global T = FieldTimeSeries.(filepath_in, "T")
-    global νₑ = FieldTimeSeries.(filepath_in, "νₑ")
-    global w = FieldTimeSeries.(filepath_in, "w")
+    d = Dict{Symbol, Any}()
 
-    global xT, yT, zT = nodes(T[1])
-    global xw, yw, zw = nodes(w[1])
+    d[:Sa] = FieldTimeSeries.(filepath_in, "S")
+    d[:T] = FieldTimeSeries.(filepath_in, "T")
+    d[:νₑ] = FieldTimeSeries.(filepath_in, "νₑ")
+    d[:w] = FieldTimeSeries.(filepath_in, "w")
 
-    number_simulations=size(T,1)
+    d[:xT], d[:yT], d[:zT] = nodes(d[:T][1])
+    d[:xw], d[:yw], d[:zw] = nodes(d[:w][1])
+
+    number_simulations=size(d[:T],1)
 
     @info "4 variables (T,Sa,νₑ,w) loaded from $number_simulations simulations"
-    return nothing
+
+    return d
 end
 
 #return parameters of the simulations defined on filenames in a dictionary
 function read_parameters(filename)
 
-    global simulation_params=Any[]
-
-    for i in eachindex(filename)
-
-        kwargs_variables=parse_savename(filename[i])
-        push!(simulation_params,kwargs_variables[2])
-    end 
+    pars = split(filename, "_")[2:end]
+    params = Dict(
+        map(x -> split(x, "="), pars)
+        )
 
     @info "New variable 'simulation_params' defined with parameters for simulations"
+    return params
 end
 
-#set the location (x,y,z,t) for a given variable 
+#set the location (x,y,z,t) for a given variable
 #then create a new variable 'variable_plot' with this info
 
 function define_AOI(
@@ -78,7 +72,7 @@ end
 #make a section plot (type heatmap: variable vs depth or time)
 #section
 
-#make a movie of a simulation 
+#make a movie of a simulation
 #movie()
 
 
