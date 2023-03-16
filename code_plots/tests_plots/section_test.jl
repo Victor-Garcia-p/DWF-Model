@@ -18,9 +18,7 @@ function section(
 
     ax=Axis(fig[dim[1],dim[2]])
     
-    global my_section=heatmap!(ax, x, y, reshaped_data)
-    
-    fig
+    return heatmap!(ax, x, y, reshaped_data)
 end
 
 ##
@@ -41,7 +39,7 @@ themes=
 
 with_theme(themes) do
     
-    section(xT,zT,variable_plot[1],[1,1],true),
+    section(results[1][:xT],results[1][:zT],variable_plot[1],[1,1],true),
     Colorbar(fig[1,2], my_section)
     
 end

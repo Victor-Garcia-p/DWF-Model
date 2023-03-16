@@ -20,7 +20,6 @@ using GibbsSeaWater
 names = ["test1", "test2"]
 load_files(names)
 
-##
 #Create a TS diagrame
 
 TS = Figure(resolution = (1200, 800))

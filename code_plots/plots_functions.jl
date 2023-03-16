@@ -7,69 +7,75 @@ using Oceananigans
 using Oceananigans.Units: minute, minutes, hour
 using GibbsSeaWater
 
+"""
+Load variables from different simulation files defined on a vector list like ["test1","test2"]
 
-#grid loading from "grid_generation"
-function load_grid(path=projectdir("code_model", "grid_generation.jl"))
-    include(path)
-    @info "Grid loaded from $path"
+4 variables are saved into a dictionary
+(T,Sa,νₑ,w)=(Temperature (C), Salinity (psu),  Viscosity (m*s^2), vertical velocity (m/s)). 
+"""
+function load_files(filename::String= "DEF_u₁₀=10_S=35.0_dTdz=0.01_T=20_dim=2D_t=2.400.jld2")::Dict{Symbol, Any}
+    filepath_in = joinpath(@__DIR__, "..", "data", filename .* ".jld2")
+
+    d = Dict{Symbol, Any}()
+
+    d[:Sa] = FieldTimeSeries.(filepath_in, "S")
+    d[:T] = FieldTimeSeries.(filepath_in, "T")
+    d[:νₑ] = FieldTimeSeries.(filepath_in, "νₑ")
+    d[:w] = FieldTimeSeries.(filepath_in, "w")
+
+    d[:xT], d[:yT], d[:zT] = nodes(d[:T][1])
+    d[:xw], d[:yw], d[:zw] = nodes(d[:w][1])
+
+
+    @info "New simulation loaded"
+    return d
+end
+
+"""
+Return parameters of the simulations defined on filenames in a dictionary
+
+Example: 
+Imput="DEF_u₁₀=10_S=35.0_dTdz=0.01_T=20_dim=2D_t=2.400.jld2"
+
+Output=Dict{String, Any}("S" => 35.0, "T" => 20, "dTdz" => 0.01, "t" => 2.4, "dim" => "2D", "u₁₀" => 10)
+"""
+function read_parameters(filename::String= "DEF_u₁₀=10_S=35.0_dTdz=0.01_T=20_dim=2D_t=2.400.jld2")
+
+    kwargs_variables=parse_savename(filename)
+    simulation_params=kwargs_variables[2]
+
+    number_entries=length(simulation_params)
+
+    @info "$number_entries parameters of a new simulation loaded"
+    return simulation_params
 end
 
 
-#Load variables from different simulation files defined on a vector list like ["test1","test2"]
-#(T,Sa,νₑ,w)=(Temperature (C), Salinity (psu),  Viscosity (m*s^2), vertical velocity (m/s))
-#defauld simularion: Example from Oceananigans renamed using new format
+"""
+Set the location (x,y,z,t) for a given variable
 
-function load_files(name_defauld = "DEF_u₁₀=10_S=35.0_dTdz=0.01_T=20_dim=2D_t=2.400.jld2")
-    filepath_in = datadir.(name_defauld .* ".jld2")
-
-    global Sa = FieldTimeSeries.(filepath_in, "S")
-    global T = FieldTimeSeries.(filepath_in, "T")
-    global νₑ = FieldTimeSeries.(filepath_in, "νₑ")
-    global w = FieldTimeSeries.(filepath_in, "w")
-
-    global xT, yT, zT = nodes(T[1])
-    global xw, yw, zw = nodes(w[1])
-
-    number_simulations=size(T,1)
-
-    @info "4 variables (T,Sa,νₑ,w) loaded from $number_simulations simulations"
-    return nothing
-end
-
-#return parameters of the simulations defined on filenames in a dictionary
-function read_parameters(filename)
-
-    global simulation_params=Any[]
-
-    for i in eachindex(filename)
-
-        kwargs_variables=parse_savename(filename[i])
-        push!(simulation_params,kwargs_variables[2])
-    end 
-
-    @info "New variable 'simulation_params' defined with parameters for simulations"
-end
-
-#set the location (x,y,z,t) for a given variable 
-#then create a new variable 'variable_plot' with this info
-
+"""
 function define_AOI(
     x,
     y,
     z,
     t,
-    variable = T)
+    variable = :T,
+    results_dictionary=results)
 
-    global variable_plot = Any[]
+    variable_plot = Any[]
 
-    for i in eachindex(variable)
-        variable_interest = variable[i].data[x, y, z, t]
+    for i in eachindex(results)
+        variable_interest = results_dictionary[i][variable].data[x, y, z, t]
 
         push!(variable_plot, variable_interest)
     end
 
-    @info "New variable 'variable_plot' setted at x=$x y=$y z=$z t=$t"
+    @info "Variable=$variable setted at x=$x y=$y z=$z t=$t"
+    return variable_plot
+
 end
+
 
 #make a profile plot (type scatter: variable vs depth)
 #profile()
@@ -78,7 +84,7 @@ end
 #make a section plot (type heatmap: variable vs depth or time)
 #section
 
-#make a movie of a simulation 
+#make a movie of a simulation
 #movie()
 
 
