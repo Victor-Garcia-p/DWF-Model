@@ -3,57 +3,104 @@
 ##amb una grafica de makie
 
 using DrWatson
-using PlotlyJS
 
 @quickactivate                  #load the local environment of the project and custom functions
 
 include("plots_functions.jl")
-load_grid()
 
 #names of the files (without .jld2)
-file_names=["3WM_u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0",
-"3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_t=43200.0"]
+#file_names=["3WM_u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0",
+#"3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_t=43200.0"]
 
-load_files(file_names)
-read_parameters(file_names)
-define_AOI(:, 16, :, 21, T)
+#load_files(file_names)
+#read_parameters(file_names)
+#define_AOI(:, 16, :, 21, T)
 
-σ = gsw_sigma0.(Sa[1].data[:, 16, :, 21], T[1].data[:, 16, :, 21])
+##
+function contours_labels(
+    ax,
+    x,
+    y,
+    data,
+    range=0:1:1  
+    ) 
 
-xx=convert(Vector{},xT)
-yy=convert(Vector{},zT)
-zz=convert(Matrix{Float64},σ)'
+    global range_variable=LinRange(minimum(data),maximum(data),7)
 
-function iso(x,y,z)
+    global range_rounded=round.(range_variable,digits=2)
 
-    con=PlotlyJS.contour(x=x,y=y,z=z,
-        contours_coloring="lines",
-        line_width=2,
-        showscale=false,
-        showlabels=false,
-        showgrid=false,
+    con=contour!(ax, x, y, data,linewidth=5,color=:white,levels=range_variable[2:end-1])
         
+    #Now we will create a point above which we will display the text
+    
+    beginnings = Point2f[]
+    
+    # First plot in contour is the line plot, first arguments are the points of the contour
+    segments = con.plots[1][1][]
+    for (i, p) in enumerate(segments)
 
-        # heatmap gradient coloring is applied between each contour level
-        contours=attr(
-            showlabels = true, # show labels on contours
-            labelfont = attr(   # label font properties
-                size = 12,
-                color = "black",
-            )
-        ))
+        # the segments are separated by NaN, which signals that a new contour starts
+        #i-50 indicates that each point will be separated 50 points
+        if isnan(p)
+            push!(beginnings, segments[i-1])
+        end
+    end
 
-        layout = Layout(
-        xaxis=attr(
-            visible = false
-        ),
-        yaxis=attr(
-            visible = false
+    scatter!(ax, beginnings, markersize = 50, color = (:white, 1), strokecolor = :white)
+
+    #Prepare the coords to add text
+    #we will add xy positions and then convert the object into a matrix wich "float32" types
+    coords_unchanged = hcat(beginnings...)'
+    coords = convert(Matrix, coords_unchanged)
+
+    #Loop to locate the text
+    global maxim = size(coords, 1)
+
+    for i = 2:maxim-1
+        text!(
+            "$range_rounded[i]",
+            position = (coords[i, 1], coords[i, 2]),
+            align = (:center, :center),
         )
-    )
-    #
-
-    global fig2=PlotlyJS.plot(con,layout)
+    end
+    
+    return con
 end
 
-iso(xx,yy,zz)
+##
+function section(
+    x=xT,
+    y=zT,
+    data=variable_plot[1],
+    dim=[1,1],
+    overwrite=false
+    )
+
+    reshaped_data = reshape(data, (size(x,1),size(y,1)))
+
+    if dim==[1,1] && overwrite==true
+        global fig = Figure()
+    end
+
+    fig[dim[1],dim[2]] = GridLayout()
+
+    ax=Axis(fig[dim[1],dim[2]])
+    
+    heatmap!(ax, x, y, reshaped_data)
+    
+    contours_labels(ax,x,y,reshaped_data)
+
+end
+
+##Heatmap of T
+section(results[1][:xT],results[1][:zT],variable_plot[1],[1,1],true)
+#Colorbar(fig[1,2], my_section)
+
+fig
+
+
+
+
+
+
+
