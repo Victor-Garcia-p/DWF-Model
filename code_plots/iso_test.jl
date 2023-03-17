@@ -17,51 +17,64 @@ include("plots_functions.jl")
 #define_AOI(:, 16, :, 21, T)
 
 ##
-function contours_labels(
+function contours_and_labels(
     ax,
     x,
     y,
     data,
-    range=0:1:1  
+    range="default",
+    text_labels=true
     ) 
 
-    global range_variable=LinRange(minimum(data),maximum(data),7)
-
-    global range_rounded=round.(range_variable,digits=2)
-
-    con=contour!(ax, x, y, data,linewidth=5,color=:white,levels=range_variable[2:end-1])
-        
-    #Now we will create a point above which we will display the text
-    
-    beginnings = Point2f[]
-    
-    # First plot in contour is the line plot, first arguments are the points of the contour
-    segments = con.plots[1][1][]
-    for (i, p) in enumerate(segments)
-
-        # the segments are separated by NaN, which signals that a new contour starts
-        #i-50 indicates that each point will be separated 50 points
-        if isnan(p)
-            push!(beginnings, segments[i-1])
-        end
+    if range=="default"
+        full_range_variable=LinRange(minimum(data),maximum(data),5)
+        range_variable=full_range_variable[2:end-1]
+    else
+        range_variable=range    
     end
 
-    scatter!(ax, beginnings, markersize = 50, color = (:white, 1), strokecolor = :white)
+    con=contour!(ax, x, y, data,linewidth=3,color=:white,levels=range_variable)
+    
+    if text_labels==true
+        
+        beginnings = Point2f[]
 
-    #Prepare the coords to add text
-    #we will add xy positions and then convert the object into a matrix wich "float32" types
-    coords_unchanged = hcat(beginnings...)'
-    coords = convert(Matrix, coords_unchanged)
+        # First plot in contour is the line plot, first arguments are the points of the contour
+        segments = con.plots[1][1][]
 
-    #Loop to locate the text
-    global maxim = size(coords, 1)
+        for (i, p) in enumerate(segments)
+            
+            # the segments are separated by NaN, which signals that a new contour starts
+            #the 20 is a number to avoid that the circles are on the right corner
+            if isnan(p)
+                
+                push!(beginnings, segments[i-20])
+            end
+        end
 
-    for i = 2:maxim-1
-        text!(
-            "$range_rounded[i]",
-            position = (coords[i, 1], coords[i, 2]),
-            align = (:center, :center),
-        )
+        scatter!(ax, beginnings, markersize=50, color=(:white), strokecolor=:white)
+
+        
+        #Prepare the coords to add text
+        #we will add xy positions and then convert the object into a matrix wich "float32" types
+        coords_unchanged = hcat(beginnings...)'
+        coords = convert(Matrix, coords_unchanged)
+
+        #Loop to locate the text and round the variable before representing
+        maxim = size(coords, 1)
+        range_rounded=round.(range_variable,digits=2)
+
+
+        for i = 1:maxim
+            label=range_rounded[i]
+
+            text!(
+                "$label",
+                position = (coords[i, 1], coords[i, 2]),
+                align = (:center, :center),
+            )
+        end
+
     end
     
     return con
@@ -73,7 +86,8 @@ function section(
     y=zT,
     data=variable_plot[1],
     dim=[1,1],
-    overwrite=false
+    overwrite=false,
+    text_labels=true
     )
 
     reshaped_data = reshape(data, (size(x,1),size(y,1)))
@@ -86,21 +100,18 @@ function section(
 
     ax=Axis(fig[dim[1],dim[2]])
     
-    heatmap!(ax, x, y, reshaped_data)
-    
-    contours_labels(ax,x,y,reshaped_data)
+    section=heatmap!(ax, x, y, reshaped_data)
 
+    if text_labels==true
+        contours_and_labels(ax,x,y,reshaped_data,"default",false)
+    end
+
+    return section
 end
 
 ##Heatmap of T
-section(results[1][:xT],results[1][:zT],variable_plot[1],[1,1],true)
-#Colorbar(fig[1,2], my_section)
+my_section=section(results[1][:xT],results[1][:zT],variable_plot[1],[1,1],true)
+Colorbar(fig[1,2], my_section)
 
 fig
-
-
-
-
-
-
 
