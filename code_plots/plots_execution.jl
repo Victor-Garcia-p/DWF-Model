@@ -18,7 +18,7 @@ file_names=["3WM_u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2
 results = load_files.(file_names)
 test=read_parameters.(file_names)
 
-variable_plot=define_AOI(:, 16, :, 21) 
+variable_plot=define_AOI(16, 16, :, 21) 
 nothing
 
 ##

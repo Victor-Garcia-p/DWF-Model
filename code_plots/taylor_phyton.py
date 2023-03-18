@@ -137,78 +137,14 @@ class TaylorDiagram(object):
 
         return contours
 
-
-def test1():
-    """Display a Taylor diagram in a separate axis."""
-
-    # Reference dataset
-    x = NP.linspace(0, 4*NP.pi, 100)
-    data = NP.sin(x)
-    refstd = data.std(ddof=1)           # Reference standard deviation
-
-    # Generate models
-    m1 = data + 0.2*NP.random.randn(len(x))     # Model 1
-    m2 = 0.8*data + .1*NP.random.randn(len(x))  # Model 2
-    m3 = NP.sin(x-NP.pi/10)                     # Model 3
-
-    # Compute stddev and correlation coefficient of models
-    samples = NP.array([ [m.std(ddof=1), NP.corrcoef(data, m)[0, 1]]
-                         for m in (m1, m2, m3)])
-
-    fig = PLT.figure(figsize=(10, 4))
-
-    ax1 = fig.add_subplot(1, 2, 1, xlabel='X', ylabel='Y')
-    # Taylor diagram
-    dia = TaylorDiagram(refstd, fig=fig, rect=122, label="Reference",
-                        srange=(0.5, 1.5))
-
-    colors = PLT.matplotlib.cm.jet(NP.linspace(0, 1, len(samples)))
-
-    ax1.plot(x, data, 'ko', label='Data')
-    for i, m in enumerate([m1, m2, m3]):
-        ax1.plot(x, m, c=colors[i], label='Model %d' % (i+1))
-    ax1.legend(numpoints=1, prop=dict(size='small'), loc='best')
-
-    # Add the models to Taylor diagram
-    for i, (stddev, corrcoef) in enumerate(samples):
-        dia.add_sample(stddev, corrcoef,
-                       marker='$%d$' % (i+1), ms=10, ls='',
-                       mfc=colors[i], mec=colors[i],
-                       label="Model %d" % (i+1))
-
-    # Add grid
-    dia.add_grid()
-
-    # Add RMS contours, and label them
-    contours = dia.add_contours(colors='0.5')
-    PLT.clabel(contours, inline=1, fontsize=10, fmt='%.2f')
-
-    # Add a figure legend
-    fig.legend(dia.samplePoints,
-               [ p.get_label() for p in dia.samplePoints ],
-               numpoints=1, prop=dict(size='small'), loc='upper right')
-
-    return dia
-
-
-def test2():
-    """
-    Climatology-oriented example (after iteration w/ Michael A. Rawlins).
-    """
+def test2(stdref,samples):
 
     # Reference std
-    stdref = 5.5
+    #stdref = 99
 
-    # Samples std,rho,name
-    samples = [[6.5, 0.7, "Model TEST"],
-               [29.593, 0.509, "Model B"],
-               [33.125, 0.585, "Model C"],
-               [29.593, 0.509, "Model D"],
-               [71.215, 0.473, "Model E"],
-               [27.062, 0.360, "Model F"],
-               [38.449, 0.342, "Model G"],
-               [35.807, 0.609, "Model H"],
-               [17.831, 0.360, "Model I"]]
+    # Samples std, rho ,name
+    #samples = [[99, 0.99, "Model TEST"],
+    #           [29.593, 0.509, "Model B"]]
 
     fig = PLT.figure()
 
@@ -223,7 +159,7 @@ def test2():
                        label=name)
 
     # Add RMS contours, and label them
-    contours = dia.add_contours(levels=5, colors='0.5')  # 5 levels in grey
+    contours = dia.add_contours(levels=6, colors='0.5')  # 5 levels in grey
     PLT.clabel(contours, inline=1, fontsize=10, fmt='%.0f')
 
     dia.add_grid()                                  # Add grid
@@ -238,9 +174,14 @@ def test2():
     return dia
 
 
-if __name__ == '__main__':
+stdref = 10
 
-    dia = test1()
-    dia = test2()
+# Samples std, rho ,name
+samples = [[99, 0.99, "Model TEST"],
+        [29.593, 0.509, "Model B"]]
 
-    PLT.show()
+
+test2(stdref,samples)
+
+PLT.show()
+

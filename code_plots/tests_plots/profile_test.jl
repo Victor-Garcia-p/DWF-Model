@@ -44,7 +44,7 @@ themes=
 ##
 with_theme(themes) do
 
-    profile(variable_plot,zT,[1,1],true),
+    profile(variable_plot,results[1][:zT],[1,1],true),
     Legend(fig[1, 2],my_sections,["test1","test2"],"Figure tytle")
     
 end
@@ -71,3 +71,21 @@ end
 
 display(fig)
 
+##
+#Example for README
+
+themes=
+    Theme(
+        Axis = (
+            xlabel="T (ºC)",
+            ylabel="Depth (m)",
+            title = "PLOT1"))
+#
+
+with_theme(themes) do
+
+    profile(variable_plot,results[1][:zT],[1,1],true)
+    
+end
+
+fig
