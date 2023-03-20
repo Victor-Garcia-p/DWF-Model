@@ -180,7 +180,7 @@ v=0m/s
 
 a
 
-## Documentation of **plot** files
+## Documentation of **plots** files
 
 ## `plot_functions`
 

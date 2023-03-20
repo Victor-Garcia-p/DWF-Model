@@ -80,3 +80,67 @@ with_theme(themes[1]) do
 end
 
 display(fig)
+
+
+##
+
+# Output in a txt file
+# opening file with .txt extension and in write mode
+ 
+# let the ans be the output of a question
+
+# The simplest case:
+
+ 
+# std, rho ,name
+std = [1,2]
+rho = [3,4]
+
+name = ["sim1","sim2"]
+
+df = DataFrame(std=std, rho=rho, name=name)
+
+## 
+using CSV, DataFrames, StatsBase
+
+function statistics_csv(results,name,variable=:T,min_time=21,reference_sim=1)
+    
+    std_values = Any[]
+
+    #transform all the simulations into one array and fix a common time (the min time of all simulations)
+    reference_simulation=vec(results[reference_sim][variable].data[:,:,:,1:min_time])
+    rho_values= Any[]   
+
+    variable_name=string(variable)
+    name_out=Any[]
+
+    for i in eachindex(results)
+
+        std_loop = std(results[i][variable].data)
+        
+        converted_simulation=vec(results[i][:T].data[:,:,:,1:stop_time])
+
+        rho_loop = cor(reference_simulation,converted_simulation)
+
+        value=name[i][variable_name]
+
+        name_loop = "$variable_name = $value" 
+
+        push!(std_values,std_loop)
+        push!(rho_values, rho_loop)
+        push!(name_out,name_loop)
+    end
+
+    df=DataFrame(std=std_values,rho=rho_values,name=name_out)
+
+    return df
+
+end
+
+df=statistics_csv(results,test)
+
+CSV.write("simulations_statistics.csv", df)   
+
+
+
+

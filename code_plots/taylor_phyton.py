@@ -12,9 +12,9 @@ __author__ = "Yannick Copin <yannick.copin@laposte.net>"
 
 import numpy as NP
 import matplotlib.pyplot as PLT
+import pandas as pd
 
-
-class TaylorDiagram(object):
+class TaylorDiagram_layers(object):
     """
     Taylor diagram.
     Plot model standard deviation and correlation to reference (data)
@@ -36,7 +36,7 @@ class TaylorDiagram(object):
         * extend: extend diagram to negative correlations
         """
 
-        from matplotlib.projections import PolarAxes
+        from matplotlib.projections import PolarAxes # type: ignore
         import mpl_toolkits.axisartist.floating_axes as FA
         import mpl_toolkits.axisartist.grid_finder as GF
 
@@ -137,18 +137,11 @@ class TaylorDiagram(object):
 
         return contours
 
-def test2(stdref,samples):
-
-    # Reference std
-    #stdref = 99
-
-    # Samples std, rho ,name
-    #samples = [[99, 0.99, "Model TEST"],
-    #           [29.593, 0.509, "Model B"]]
+def TaylorDiagram_plot(stdref,samples):
 
     fig = PLT.figure()
 
-    dia = TaylorDiagram(stdref, fig=fig, label='Reference', extend=True)
+    dia = TaylorDiagram_layers(stdref, fig=fig, label='Reference', extend=True)
     dia.samplePoints[0].set_color('r')  # Mark reference point as a red star
 
     # Add models to Taylor diagram
@@ -159,8 +152,8 @@ def test2(stdref,samples):
                        label=name)
 
     # Add RMS contours, and label them
-    contours = dia.add_contours(levels=6, colors='0.5')  # 5 levels in grey
-    PLT.clabel(contours, inline=1, fontsize=10, fmt='%.0f')
+    contours = dia.add_contours(levels=5, colors='0.5')  # 5 levels in grey
+    PLT.clabel(contours, inline=1, fontsize=10, fmt='%.1f')
 
     dia.add_grid()                                  # Add grid
     dia._ax.axis[:].major_ticks.set_tick_out(True)  # Put ticks outward
@@ -173,15 +166,11 @@ def test2(stdref,samples):
 
     return dia
 
+##
+data = pd.read_csv("simulations_statistics.csv")
 
-stdref = 10
+samples=data.to_numpy()
 
-# Samples std, rho ,name
-samples = [[99, 0.99, "Model TEST"],
-        [29.593, 0.509, "Model B"]]
-
-
-test2(stdref,samples)
-
+TaylorDiagram_plot(samples[0,0],samples[1:])
 PLT.show()
 
