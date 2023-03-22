@@ -69,12 +69,16 @@ function define_AOI(
     z,
     t,
     variable = :T,
-    results_dictionary=results)
+    simulation_dictionary=results)
 
-    variable_plot = Any[]
+    variable_plot = Dict{Symbol, Any}()
 
-    for i in eachindex(results)
-        variable_interest = results_dictionary[i][variable].data[x, y, z, t]
+    d[:x], d[:y], d[:z], d[:t] = x,y,z,t
+
+    d[:variable] = Any[]
+
+    for i in eachindex(simulation_dictionary)
+        variable_interest = simulation_dictionary[i][variable].data[x, y, z, t]
 
         push!(variable_plot, variable_interest)
     end
