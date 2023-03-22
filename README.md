@@ -138,7 +138,7 @@ variable_plot = define_AOI(:, 16, :, 21)
 To plot a single figure with default parameters simply use the function
 
 ```julia
-profile(variable_plot,results[1][:zT],[1,1],true)
+profile(variable_plot[:data],results[1][:zT],[1,1],true)
 display(fig)
 ```
 
@@ -157,7 +157,7 @@ themes=
 
 with_theme(themes) do
 
-    profile(variable_plot,results[1][:zT],[1,1],true)
+    profile(variable_plot[:data],results[1][:zT],[1,1],true)
     
 end
 fig
@@ -169,7 +169,9 @@ fig
 
 Those are some more complex examples that show what can be done with the code. Each of them can be found at _example_plots_ folder
 
-### Example 1
+### Section with a colorbar
+
+![Here, 'read_parameters' function is used to read the values of the wind](code_plots/example_plots/section_example.png)
 
 ### Example 2
 
@@ -205,10 +207,6 @@ Use: Contains the model splitted into functions
 ### `plot_functions.jl`
 
 Use: Contains all the functions needed to plot
-
-### Examples
-
-a
 
 ## Need more help?
 

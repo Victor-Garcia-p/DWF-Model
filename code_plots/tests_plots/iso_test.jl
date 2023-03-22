@@ -114,4 +114,3 @@ my_section=section(results[1][:xT],results[1][:zT],variable_plot[1],[1,1],true)
 Colorbar(fig[1,2], my_section)
 
 fig
-

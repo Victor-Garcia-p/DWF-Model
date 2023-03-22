@@ -82,24 +82,6 @@ end
 display(fig)
 
 
-##
-
-# Output in a txt file
-# opening file with .txt extension and in write mode
- 
-# let the ans be the output of a question
-
-# The simplest case:
-
- 
-# std, rho ,name
-std = [1,2]
-rho = [3,4]
-
-name = ["sim1","sim2"]
-
-df = DataFrame(std=std, rho=rho, name=name)
-
 ## 
 using CSV, DataFrames, StatsBase
 
@@ -140,7 +122,6 @@ end
 df=statistics_csv(results,test)
 
 CSV.write("simulations_statistics.csv", df)   
-
 
 
 ##
