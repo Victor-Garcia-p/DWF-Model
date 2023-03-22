@@ -1,4 +1,4 @@
-# Modelization of the deep water formation
+# **Modelization of the deep water formation**
 
 Victor Garcia (@Victor-Garcia-p), 2023-03-17
 
@@ -6,31 +6,60 @@ Victor Garcia (@Victor-Garcia-p), 2023-03-17
 
 * ...
 
-## Install the model
+---
+
+## Install the repository
+
+---
+
+This steps only needs to be done once:
 
 ### 1. Download [Julia](https://julialang.org/downloads/)
 
-### 2. Make a copy of the repository
+### 2. Make a copy of the repository from Github
 
 ```julia
 $git clone https://github.com/Victor-Garcia-p/TFG.git
 ```
 
+More [help](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
+
 ### 3. Install [DrWatson](https://github.com/JuliaDynamics/DrWatson.jl) package
+
+This is an optional step, but will help to do initialize the project and load the project environment
 
 ```julia
 julia> using Pkg
 julia> Pkg.add("DrWatson")
 ```
 
-### 4. Load the project environment
+### 4. Initialize the project
+
+```julia
+julia> using DrWatson
+julia> initialize_project("DWF_model")
+```
+
+Note: _You may need to add the path to the project. See more help [here](https://juliadynamics.github.io/DrWatson.jl/v2.8/project/#Initializing-a-Project-1)_
+
+---
+
+## Load the project environment
+
+---
+
+Before runing any script, load the project environment. The use of DrWatson is opcional but recomended
 
 ```julia
 julia> using DrWatson
 julia> @quickactivate
 ```
 
+---
+
 ## Creating a model
+
+---
 
 To create a simulation use `model_execution.jl` following this steps:
 
@@ -59,7 +88,9 @@ To create a simulation use `model_execution.jl` following this steps:
 
     _Note: `grid.Lz` is the maximum depth of the grid_
 
-3. Set the constants of models and simulations in separated `Dict()`. If not defined, taken as [default](#default-values)
+3. Set the constants of models and simulations in separated `Dict()`. If not defined, taken as default
+
+    ---
 
     **Example**
 
@@ -71,7 +102,7 @@ To create a simulation use `model_execution.jl` following this steps:
     simulation_arguments= [Dict(:t=>1440minutes)]
    ```
 
-   More info: [multiples_runs](#multiples-runs)
+   *Multiple runs: Add another `Dict()` at the vector
 
 4. Run the model using a loop that gives the parameters to the functions of the model. See [`model_functions.jl`](#model_functionsjl) for more info
 
@@ -84,13 +115,16 @@ To create a simulation use `model_execution.jl` following this steps:
     end
    ```
 
+---
+
 ## Ploting a simulation
 
-These a
+---
+The following example is part of `section_example.jl` at the folder _example_plots_
 
 ### 1. Loading the functions
 
-If not done before load the [project environment](#4-load-the-project-environment), then load `plots_functions.jl` with all the plots and the grid of the model
+If not done before load the [project environment](#load-the-project-environment), then load `plots_functions.jl` with all the plots and the grid of the model
 
 ```julia
 include("plots_functions.jl")
@@ -112,7 +146,7 @@ _*Note: Write the full name without (.jld2).Files should be located at "DWF_mode
 
 ### 3. Define the area (AOU)
 
-Each type of plot requires a different imput of data (see  [`plots_functions.jl`](#plot_functions)). For a `section()`  **y** and **t** should be fixed
+Each type of plot requires a different imput of data (see  [`plots_functions.jl`](#plot_functionsjl)). For a `section()`  **y** and **t** should be fixed
 
 ```julia
 variable_plot = define_AOI(:, 16, :, 21) 
@@ -128,7 +162,7 @@ fig
 ```
 
 ![Profile of ["3WM_u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0",
-"3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_t=43200.0"] with default values](code_plots/example_plots/section_default_README.png)
+"3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_t=43200.0"] with default values](code_plots/example_plots/section_default.png)
 
 To costumizate the figure, like adding a title and labels, simply add into `Theme()` (more info about this [here](https://docs.makie.org/stable/documentation/theming/index.html#example_17370679024465238660)).
 
@@ -148,44 +182,82 @@ end
 fig
 ```
 
-![Profile of the same simulations using a Theme() to define axis names ](code_plots/example_plots/section_themes_README.png)
+![Profile of the same simulations using a Theme() to define axis names ](code_plots/example_plots/section_themes.png)
+
+---
 
 ## Gallery
 
-Those are some more complex examples to check what can be done with the code. Each example can be found at _example_plots_ folder to ensure replication
+---
+
+Those are some more complex examples that show what can be done with the code. Each of them can be found at _example_plots_ folder
 
 ### Example 1
 
 ### Example 2
 
-## Documentation of **model** files
+---
 
-### `model_execution.jl`
+## Documentation of model folder
 
-Funcionalitat/descripció:
-imput: Batimetry from EMODNET (Batimetry_D5_2020.nc)
-output: The map, printed in "plot" section
-comments: Some parts of the code are adapted from other authors, please
-see the references at the main work pdf.
+---
+
+### **Name syntax**
+
+For all the model the following syntax is used
+
+#### _Name=3WM_variables=values_
+
+Where _variables_ are separed with (,) and follow the order: wind speed (u₁₀), salinity of each layer separed with (-), temperature gradient (dTdz), dimension of the simulation (2D or 3D) and maximum time (t)
 
 ### `grid_generation.jl`
 
+Use: creates the grid for the model considering a linear sparcing at x,y and a
+variable resolution at z.
+
+### `model_execution.jl`
+
+Use: Set the model with the defined constants and safe the results in a .jld2 file.
+
+Imput: `grid_generation.jl` and `model_functions.jl`
+
+Output: A simulation.jld2 with information about velocity (in 3 dimensions), tracers (T,S) and eddy_viscosity. The name is created following [this](#name-syntax) syntax.
+
 ### `model_functions.jl`
 
-#### Default values
+Use: Contains the model splitted into functions
 
-v=0m/s
+---
 
-#### Multiples runs
+## Documentation of plots folder
+
+---
+
+### `plot_functions.jl`
+
+Use: Contains all the functions needed to plot
+
+### Examples
 
 a
 
-## Documentation of **plots** files
+---
 
-## `plot_functions`
+## Need more help?
 
-a
+---
+
+1. For specific documentation of a function use `REPL ?` help mode
+
+    ```julia
+    help?> load_files
+    ```
+
+2. For bug reports, post an "issue" in the code repository
+
+3. For constributions to the code, make a "pull request" in the code repository.
 
 ## References and contributions
 
+---
 a

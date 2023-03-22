@@ -8,10 +8,19 @@ using Oceananigans.Units: minute, minutes, hour
 using GibbsSeaWater
 
 """
-Load variables from different simulation files defined on a vector list like ["test1","test2"]
+Use: Load variables from different simulation files
 
-4 variables are saved into a dictionary
-(T,Sa,νₑ,w)=(Temperature (C), Salinity (psu),  Viscosity (m*s^2), vertical velocity (m/s)). 
+Arguments: Vector with a list of simulations located at DWFmodel-Plots_out-Simulations. Names should be 
+writen without the format (example: (["test1","test2"])
+
+Output: A Dict() with 
+
+4 variables 
+(T,Sa,νₑ,w)=(Temperature (C), Salinity (psu),  Viscosity (m*s^2), vertical velocity (m/s))
+
+Grid information
+(xT,yT,zT)=positions of T,S and νₑ
+(xw,yw,zw)=positions of w
 """
 function load_files(filename::String= "DEF_u₁₀=10_S=35.0_dTdz=0.01_T=20_dim=2D_t=2.400.jld2")::Dict{Symbol, Any}
     filepath_in = joinpath(@__DIR__, "..", "data", filename .* ".jld2")

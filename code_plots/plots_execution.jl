@@ -13,7 +13,7 @@ include(joinpath(@__DIR__, "..", "code_model/grid_generation.jl"))
 
 #names of the files (without .jld2)
 file_names=["3WM_u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0",
-"3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_t=43200.0"]
+"3WM_u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_t=86400.0"]
 
 results = load_files.(file_names)
 test=read_parameters.(file_names)
@@ -143,4 +143,16 @@ CSV.write("simulations_statistics.csv", df)
 
 
 
+##
+function tes(variables=[:w,:T,:Sa,:νₑ])
 
+    a=Any[]
+    for j in eachindex(variables)
+        an=results[1][variables[j]].data
+        push!(a,an)
+    end
+
+    return a
+end
+
+b=tes()
