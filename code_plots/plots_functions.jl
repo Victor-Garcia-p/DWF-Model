@@ -62,7 +62,6 @@ end
 
 """
 Set the location (x,y,z,t) for a given variable
-
 """
 function define_AOI(
     x,
@@ -85,9 +84,56 @@ function define_AOI(
 
 end
 
+#make a profile
+function profile(
+    x=variable_plot,
+    y=results[1][:zT],
+    dim=[1,1],
+    overwrite=false
+    )
 
-#make a profile plot (type scatter: variable vs depth)
-#profile()
+    if dim==[1,1] && overwrite==true
+        global fig = Figure()
+    end
+
+    fig[dim[1],dim[2]] = GridLayout()
+
+    ax=Axis(fig[dim[1],dim[2]])
+
+    global my_sections=Any[]
+
+    for i in eachindex(x)
+
+        plot=scatterlines!(ax, x[i], y)
+        push!(my_sections,plot)
+    end    
+
+    fig
+end
+
+
+
+#make a section (type scatter: variable vs depth)
+function section(
+    x=xT,
+    y=zT,
+    data=variable_plot[1],
+    dim=[1,1],
+    overwrite=false
+    )
+
+    reshaped_data = reshape(data, (size(x,1),size(y,1)))
+
+    if dim==[1,1] && overwrite==true
+        global fig = Figure()
+    end
+
+    fig[dim[1],dim[2]] = GridLayout()
+
+    ax=Axis(fig[dim[1],dim[2]])
+    
+    return heatmap!(ax, x, y, reshaped_data)
+end
 
 
 #make a section plot (type heatmap: variable vs depth or time)
@@ -95,7 +141,6 @@ end
 
 #make a movie of a simulation
 #movie()
-
 
 
 #find the maxim and minimum of a variable

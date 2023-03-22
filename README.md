@@ -6,11 +6,7 @@ Victor Garcia (@Victor-Garcia-p), 2023-03-17
 
 * ...
 
----
-
 ## Install the repository
-
----
 
 This steps only needs to be done once:
 
@@ -42,11 +38,7 @@ julia> initialize_project("DWF_model")
 
 Note: _You may need to add the path to the project. See more help [here](https://juliadynamics.github.io/DrWatson.jl/v2.8/project/#Initializing-a-Project-1)_
 
----
-
 ## Load the project environment
-
----
 
 Before runing any script, load the project environment. The use of DrWatson is opcional but recomended
 
@@ -55,11 +47,7 @@ julia> using DrWatson
 julia> @quickactivate
 ```
 
----
-
 ## Creating a model
-
----
 
 To create a simulation use `model_execution.jl` following this steps:
 
@@ -115,36 +103,29 @@ To create a simulation use `model_execution.jl` following this steps:
     end
    ```
 
----
-
 ## Ploting a simulation
 
----
 The following example is part of `section_example.jl` at the folder _example_plots_
 
 ### 1. Loading the functions
 
-If not done before load the [project environment](#load-the-project-environment), then load `plots_functions.jl` with all the plots and the grid of the model
+If not done before load the [project environment](#load-the-project-environment), then load `plots_functions.jl` with all the functions
 
 ```julia
 include("plots_functions.jl")
-include(joinpath(@__DIR__, "..", "code_model/grid_generation.jl"))
 ```
 
 ### 2. Load the files and its parameters
 
-Use load_files and read_parameter functions with a **(.)** for multiple simulations
+Use load_files with a **(.)** for multiple simulations. The name must be written without (.jld2) and all files should be located at _"DWF_model\data"_ folder.
 
 ```julia
 file_names = ["3WM_u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0",
 "3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_t=43200.0"]
 results = load_files.(file_names)
-parameters = read_parameters.(file_names)
 ```
 
-_*Note: Write the full name without (.jld2).Files should be located at "DWF_model\data" folder._
-
-### 3. Define the area (AOU)
+### 3. Define the area (AOI)
 
 Each type of plot requires a different imput of data (see  [`plots_functions.jl`](#plot_functionsjl)). For a `section()`  **y** and **t** should be fixed
 
@@ -157,12 +138,12 @@ variable_plot = define_AOI(:, 16, :, 21)
 To plot a single figure with default parameters simply use the function
 
 ```julia
-profile(variable_plot,zT,[1,1],true)
-fig
+profile(variable_plot,results[1][:zT],[1,1],true)
+display(fig)
 ```
 
 ![Profile of ["3WM_u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0",
-"3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_t=43200.0"] with default values](code_plots/example_plots/section_default.png)
+"3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_t=43200.0"] with default values](code_plots/example_plots/profile_default.png)
 
 To costumizate the figure, like adding a title and labels, simply add into `Theme()` (more info about this [here](https://docs.makie.org/stable/documentation/theming/index.html#example_17370679024465238660)).
 
@@ -182,13 +163,9 @@ end
 fig
 ```
 
-![Profile of the same simulations using a Theme() to define axis names ](code_plots/example_plots/section_themes.png)
-
----
+![Profile of the same simulations using a Theme() to define axis names ](code_plots/example_plots/profile_themes.png)
 
 ## Gallery
-
----
 
 Those are some more complex examples that show what can be done with the code. Each of them can be found at _example_plots_ folder
 
@@ -196,11 +173,7 @@ Those are some more complex examples that show what can be done with the code. E
 
 ### Example 2
 
----
-
 ## Documentation of model folder
-
----
 
 ### **Name syntax**
 
@@ -227,11 +200,7 @@ Output: A simulation.jld2 with information about velocity (in 3 dimensions), tra
 
 Use: Contains the model splitted into functions
 
----
-
 ## Documentation of plots folder
-
----
 
 ### `plot_functions.jl`
 
@@ -241,11 +210,7 @@ Use: Contains all the functions needed to plot
 
 a
 
----
-
 ## Need more help?
-
----
 
 1. For specific documentation of a function use `REPL ?` help mode
 
@@ -259,5 +224,4 @@ a
 
 ## References and contributions
 
----
 a
