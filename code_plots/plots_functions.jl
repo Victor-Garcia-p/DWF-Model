@@ -8,6 +8,8 @@ using Oceananigans
 using Oceananigans.Units: minute, minutes, hour
 using GibbsSeaWater
 
+using CSV, DataFrames, StatsBase
+
 """
 Use: Load variables from different simulation files
 
@@ -104,15 +106,15 @@ function profile(
 
     ax=Axis(fig[dim[1],dim[2]])
 
-    global my_sections=Any[]
+    profile_lines=Any[]
 
     for i in eachindex(x)
 
         plot=scatterlines!(ax, x[i], y)
-        push!(my_sections,plot)
+        push!(profile_lines,plot)
     end    
 
-    fig
+    return profile_lines
 end
 
 #make a section (type scatter: variable vs depth)

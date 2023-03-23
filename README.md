@@ -4,7 +4,15 @@ Victor Garcia (@Victor-Garcia-p), 2023-03-17
 
 ## Content
 
-* ...
+* [Install the repository](#install-the-repository)
+* [Load the project environment](#load-the-project-environment)
+* [Create a model](#create-a-model)
+* [Plot a simulation](#plot-a-simulation)
+* [Gallery](#gallery)
+* [Documentation of model folder](#documentation-of-model-folder)
+* [Documentation of plots folder](#documentation-of-plots-folder)
+* [Need more help?](#need-more-help)
+* [References](#references)
 
 ## Install the repository
 
@@ -47,7 +55,7 @@ julia> using DrWatson
 julia> @quickactivate
 ```
 
-## Creating a model
+## Create a model
 
 To create a simulation use `model_execution.jl` following this steps:
 
@@ -103,7 +111,7 @@ To create a simulation use `model_execution.jl` following this steps:
     end
    ```
 
-## Ploting a simulation
+## Plot a simulation
 
 The following example is part of `section_example.jl` at the folder _example_plots_
 
@@ -169,11 +177,13 @@ fig
 
 Those are some more complex examples that show what can be done with the code. Each of them can be found at _example_plots_ folder
 
-### Section with a colorbar
+### Multiple figures
 
-![Here, 'read_parameters' function is used to read the values of the wind](code_plots/example_plots/section_example.png)
+![Example of multiple figures (section+profile) using a legend and a colorbar](code_plots/example_plots/multiple_figures_example.png)
 
-### Example 2
+### Video of the simulations
+
+* see the video at youtube
 
 ## Documentation of model folder
 
@@ -208,6 +218,10 @@ Use: Contains the model splitted into functions
 
 Use: Contains all the functions needed to plot
 
+### Taylor diagram
+
+To create this plot first run `taylor_dataframe.jl` to make the statistics required, then use `taylor_plot.py` to make the plot
+
 ## Need more help?
 
 1. For specific documentation of a function use `REPL ?` help mode
@@ -220,6 +234,7 @@ Use: Contains all the functions needed to plot
 
 3. For constributions to the code, make a "pull request" in the code repository.
 
-## References and contributions
+## References
 
-a
+* Model based on `ocean_wind_mixing_and_convection.jl` from Oceananigans de (Ramadhan et al., (2020)
+* `taylor_plot.py` is modified from Yannick Copin (2018)
