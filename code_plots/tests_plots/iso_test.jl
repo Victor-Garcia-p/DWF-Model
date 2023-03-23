@@ -1,20 +1,18 @@
-##Contours a la llibreria PlotlyJS
-##Objectiu: crear un grafic amb nomes el contours i les labels per superpossar-ho
-##amb una grafica de makie
 
 using DrWatson
+@quickactivate
 
-@quickactivate                  #load the local environment of the project and custom functions
+# 1. Loading the functions
+include(joinpath(@__DIR__, "..", "plots_functions.jl"))
 
-#include("plots_functions.jl")
+# 2. Load the files and its parameters
+file_names=["3WM_u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0",
+"3WM_u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_t=86400.0"]
 
-#names of the files (without .jld2)
-#file_names=["3WM_u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0",
-#"3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_t=43200.0"]
+results = load_files.(file_names)
 
-#load_files(file_names)
-#read_parameters(file_names)
-#define_AOI(:, 16, :, 21, T)
+# 3. Define the area (AOI)
+variable_plot=define_AOI.(:, 16, :, 21) 
 
 ##
 function contours_and_labels(
@@ -27,7 +25,7 @@ function contours_and_labels(
     ) 
 
     if range=="default"
-        full_range_variable=LinRange(minimum(data),maximum(data),5)
+        full_range_variable=LinRange(minimum(data),maximum(data),6)
         range_variable=full_range_variable[2:end-1]
     else
         range_variable=range    
@@ -80,7 +78,6 @@ function contours_and_labels(
     return con
 end
 
-##
 function section(
     x=xT,
     y=zT,
@@ -103,14 +100,13 @@ function section(
     section=heatmap!(ax, x, y, reshaped_data)
 
     if text_labels==true
-        contours_and_labels(ax,x,y,reshaped_data,"default",false)
+        contours_and_labels(ax,x,y,reshaped_data,"default",true)
     end
 
     return section
 end
 
-##Heatmap of T
-my_section=section(results[1][:xT],results[1][:zT],variable_plot[1],[1,1],true)
+my_section=section(results[1][:xT],results[1][:zT],variable_plot[:data][1],[1,1],true)
 Colorbar(fig[1,2], my_section)
 
 fig
