@@ -22,10 +22,6 @@ This steps only needs to be done once:
 
 ### 2. Make a copy of the repository from Github
 
-```julia
-$git clone https://github.com/Victor-Garcia-p/TFG.git
-```
-
 More [help](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
 
 ### 3. Install [DrWatson](https://github.com/JuliaDynamics/DrWatson.jl) package
@@ -48,7 +44,7 @@ Note: _You may need to add the path to the project. See more help [here](https:/
 
 ## Load the project environment
 
-Before runing any script, load the project environment. The use of DrWatson is opcional but recomended
+Before running any script, load the project environment. The use of DrWatson is optional but recommended
 
 ```julia
 julia> using DrWatson
@@ -135,7 +131,7 @@ results = load_files.(file_names)
 
 ### 3. Define the area (AOI)
 
-Each type of plot requires a different imput of data (see  [`plots_functions.jl`](#plot_functionsjl)). For a `section()`  **y** and **t** should be fixed
+Each type of plot requires a different input of data (see  [`plots_functions.jl`](#plot_functionsjl)). For a `section()`  **y** and **t** should be fixed
 
 ```julia
 variable_plot = define_AOI(:, 16, :, 21) 
@@ -153,7 +149,7 @@ display(fig)
 ![Profile of ["3WM_u₁₀=15_S=35.0-35.0-35.0_dTdz=0.04_T=13.18-13.38-12.71_dim=2D_t=1200.0",
 "3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.01_T=13.18-13.38-12.71_dim=2D_t=43200.0"] with default values](code_plots/example_plots/profile_default.png)
 
-To costumizate the figure, like adding a title and labels, simply add into `Theme()` (more info about this [here](https://docs.makie.org/stable/documentation/theming/index.html#example_17370679024465238660)).
+To personalize the figure, like adding a title and labels, simply add into `Theme()` (more info about this [here](https://docs.makie.org/stable/documentation/theming/index.html#example_17370679024465238660)).
 
 ```julia
 themes=
@@ -193,7 +189,7 @@ For all the model the following syntax is used
 
 #### _Name=3WM_variables=values_
 
-Where _variables_ are separed with (,) and follow the order: wind speed (u₁₀), salinity of each layer separed with (-), temperature gradient (dTdz), dimension of the simulation (2D or 3D) and maximum time (t)
+Where _variables_ are separated with (,) and follow the order: wind speed (u₁₀), salinity of each layer separated with (-), temperature gradient (dTdz), dimension of the simulation (2D or 3D) and maximum time (t)
 
 ### `grid_generation.jl`
 
@@ -204,13 +200,13 @@ variable resolution at z.
 
 Use: Set the model with the defined constants and safe the results in a .jld2 file.
 
-Imput: `grid_generation.jl` and `model_functions.jl`
+Input: `grid_generation.jl` and `model_functions.jl`
 
 Output: A simulation.jld2 with information about velocity (in 3 dimensions), tracers (T,S) and eddy_viscosity. The name is created following [this](#name-syntax) syntax.
 
 ### `model_functions.jl`
 
-Use: Contains the model splitted into functions
+Use: Contains the model spitted into functions
 
 ## Documentation of plots folder
 
@@ -226,13 +222,11 @@ To create this plot first run `taylor_dataframe.jl` to make the statistics requi
 
 1. For specific documentation of a function use `REPL ?` help mode
 
-    ```julia
-    help?> load_files
-    ```
+    help?> load_files()
 
 2. For bug reports, post an "issue" in the code repository
 
-3. For constributions to the code, make a "pull request" in the code repository.
+3. For contributions to the code, make a "pull request" in the code repository.
 
 ## References
 
