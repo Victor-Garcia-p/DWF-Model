@@ -12,8 +12,8 @@ References: Script entirely from Oceananigans example, "ocean_wind_mixing_and_co
 using CairoMakie
 
 #define the path and load the grid
-path = joinpath(@__DIR__, "..", "code")
-file = joinpath(path, "grids_generation.jl")
+path = joinpath(@__DIR__, "..", "..","code_model")
+file = joinpath(path, "grid_generation.jl")
 
 include(file)
 
@@ -24,5 +24,5 @@ ax = Axis(fig[1, 1], ylabel = "Depth (m)", xlabel = "Vertical spacing (m)")
 lines!(ax, grid.Δzᵃᵃᶜ[1:grid.Nz], grid.zᵃᵃᶜ[1:grid.Nz])
 scatter!(ax, grid.Δzᵃᵃᶜ[1:Nz], grid.zᵃᵃᶜ[1:Nz])
 
-save("ocean_wind_mixing_convection_grid_spacing.svg", fig)
+save("ocean_wind_mixing_convection_grid_spacing.png", fig)
 nothing #hide
