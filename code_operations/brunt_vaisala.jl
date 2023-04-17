@@ -7,19 +7,35 @@ using DrWatson
 @quickactivate
 
 using StatsBase
-using HypothesisTests
 
-functions=projectdir("code_plots","plots_functions.jl")
+include(projectdir("code_model","model_functions.jl"))
 
-include(functions)
-
-load_files("3WM__u₁₀=0_S=37.95-38.54-38.41_dTdz=0.0_T=13.18-13.38-12.71_dim=2D_t=1200.0")
+data=load_simulation("Precon_u₁₀=30_S=38.412-38.522-38.533-38.518-38.503-38.487_dTdz=0.0_T=13.038-13.282-13.188-13.079-13.035-12.932_t=2400.0")
 
 ##1) Brunt Vaisala for a given simulation
 
 #Calculate the density
-σ=gsw_sigma0.(Sa.data[:, 16, :, :], T.data[:, 16, :, :])
+σ=gsw_sigma0.(data[:Sa].data, data[:T].data)
 
+##
+profile([σ[1,1,:,1]],data[:zT],[1,1],true)
+display(fig)
+
+
+##
+S=[
+38.412,	
+38.522,	
+38.533,	
+38.518,	
+38.503,	
+38.487] 
+
+T=[13.038,13.282,13.188,13.079,	13.035, 12.932]
+
+σ=round.(gsw_sigma0.(S, T),digits=3)
+
+##
 Δσ_1D=Any[]
 max_time=size(σ,3)
 

@@ -29,11 +29,10 @@ mutable struct ModelParameters{A<:Real, N<:Real,E<:Real}
     S::String
     dTdz::N
     T::String
-    dim::String
     t::E
 
     function ModelParameters(u₁₀::A, S::String, dTdz::N, T::String,t::E) where {A, N, E}
-        new{A,N,E}(u₁₀, S, dTdz, T, "2D", t)
+        new{A,N,E}(u₁₀, S, dTdz, T, t)
     end
 end
 
@@ -58,7 +57,7 @@ buoyancy = SeawaterBuoyancy(
 #
 # We calculate the surface temperature flux associated with surface heating of
 # 200 W m⁻², reference density `ρₒ`, and heat capacity `cᴾ`,
-const Qʰ = 200.0  # W m⁻², surface _heat_ flux
+const Qʰ = 800.0  # W m⁻², surface _heat_ flux 
 const ρₒ = 1026.0 # kg m⁻³, average density at the surface of the world ocean
 const cᴾ = 3991.0 # J K⁻¹ kg⁻¹, typical heat capacity for seawater
 const Qᵀ = Qʰ / (ρₒ * cᴾ) # K m s⁻¹, surface _temperature_ flux
@@ -119,7 +118,7 @@ function build_model(layers::Vector{WaterLayer{T}};
              u₁₀=10,
              dTdz=0.01,
              t=10minutes,
-             evaporation_rate=0,
+             evaporation_rate=1e-3 / hour,
              ) where T <:Real
 
 
@@ -215,23 +214,14 @@ end
 function prepare_simulation!(params,
                              model;
                              t=10minutes,
-                             Δt=10.0,
-                             dimension=(:, 16, :),
-                             simulation_prefix="3WM")
-
-    # ## Setting up a simulation
-    #
-    # We set-up a simulation with an initial time-step of 10 seconds
-    # that stops at 40 minutes, with adaptive time-stepping and progress printing.
-
+                             Δt=180.0,
+                             simulation_prefix="Precon")
+   
     global simulation = Simulation(model, Δt = Δt, stop_time = t)
 
-    # The `TimeStepWizard` helps ensure stable time-stepping
-    # with a Courant-Freidrichs-Lewy (CFL) number of 1.0.
+    wizard = TimeStepWizard(cfl=1.0, max_change=1.1, max_Δt=1minute)
 
-
-    wizard = TimeStepWizard(cfl = 1.0, max_change = 1.1, max_Δt = 1minute)
-    simulation.callbacks[:wizard] = Callback(wizard, IterationInterval(10))
+    simulation.callbacks[:wizard] = Callback(wizard, IterationInterval(5))
 
     # Nice progress messaging is helpful:
 
@@ -260,14 +250,12 @@ function prepare_simulation!(params,
     eddy_viscosity = (; νₑ = model.diffusivity_fields.νₑ)
 
     ##save the output
-    params.dim = sizeof(dimension) == 0 ? "3D" : "2D"
     filename = build_simulation_name(params, simulation_prefix)
 
     simulation.output_writers[:slices] = JLD2OutputWriter(
         model,
         merge(model.velocities, model.tracers, eddy_viscosity),
         filename = joinpath(path, filename),
-        indices = dimension,
         schedule = TimeInterval(1minute),
         overwrite_existing = true,
     )

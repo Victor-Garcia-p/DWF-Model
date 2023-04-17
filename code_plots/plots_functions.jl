@@ -12,16 +12,21 @@ using CSV, DataFrames, StatsBase
 
 """
 Use: Load variables from different simulation files
+
 Arguments: Vector with a list of simulations located at DWFmodel-Plots_out-Simulations. Names should be 
 writen without the format (example: (["test1","test2"])
+
 Output: A Dict() with 
+
 4 variables 
 (T,Sa,νₑ,w)=(Temperature (C), Salinity (psu),  Viscosity (m*s^2), vertical velocity (m/s))
+
 Grid information
 (xT,yT,zT)=positions of T,S and νₑ
 (xw,yw,zw)=positions of w
 """
-function load_files(filename::String= "DEF_u₁₀=10_S=35.0_dTdz=0.01_T=20_dim=2D_t=2.400.jld2")::Dict{Symbol, Any}
+function load_simulation(filename::String= "DEF_u₁₀=10_S=35.0_dTdz=0.01_T=20_dim=2D_t=2.400.jld2"
+    )::Dict{Symbol, Any}
     filepath_in = joinpath(@__DIR__, "..", "data", filename .* ".jld2")
 
     d = Dict{Symbol, Any}()
@@ -31,8 +36,8 @@ function load_files(filename::String= "DEF_u₁₀=10_S=35.0_dTdz=0.01_T=20_dim=
     d[:νₑ] = FieldTimeSeries.(filepath_in, "νₑ")
     d[:w] = FieldTimeSeries.(filepath_in, "w")
 
-    d[:xT], d[:yT], d[:zT] = nodes(d[:T][1])
-    d[:xw], d[:yw], d[:zw] = nodes(d[:w][1])
+    d[:xT], d[:yT], d[:zT] = nodes(d[:T])
+    d[:xw], d[:yw], d[:zw] = nodes(d[:w])
 
 
     @info "New simulation loaded"
@@ -41,8 +46,10 @@ end
 
 """
 Return parameters of the simulations defined on filenames in a dictionary
+
 Example: 
 Imput="DEF_u₁₀=10_S=35.0_dTdz=0.01_T=20_dim=2D_t=2.400.jld2"
+
 Output=Dict{String, Any}("S" => 35.0, "T" => 20, "dTdz" => 0.01, "t" => 2.4, "dim" => "2D", "u₁₀" => 10)
 """
 function read_parameters(filename::String= "DEF_u₁₀=10_S=35.0_dTdz=0.01_T=20_dim=2D_t=2.400.jld2")
@@ -60,7 +67,7 @@ end
 """
 Set the location (x,y,z,t) for a given variable
 """
-function define_AOI(
+function AOI_simulation(
     x,
     y,
     z,
@@ -185,7 +192,7 @@ function build_movie(variables=movie_variables,
     axis_kwargs = (
         xlabel = "x (m)",
         ylabel = "z (m)",
-        aspect = AxisAspect(grid.Lx / grid.Lz),
+        #aspect = AxisAspect(grid.Lx / grid.Lz),
         limits = ((0, grid.Lx), (-grid.Lz, 0)),
     )
     
@@ -201,7 +208,7 @@ function build_movie(variables=movie_variables,
     #We need to add as otherwise it will appear the
     #error "ERROR: ArgumentError: range step cannot be zero"
     wlims = max_min(results[1][:w].data)
-    Tlims = max_min(results[1][:T].data)
+    #Tlims = max_min(results[1][:T].data)
     Slims = max_min(results[1][:Sa].data)
     νₑlims = max_min(results[1][:νₑ].data)
     
@@ -209,7 +216,7 @@ function build_movie(variables=movie_variables,
     hm_w = heatmap!(ax_w, results[1][:xw], results[1][:zw], variables[1,1]; colormap = :balance, colorrange = wlims)
     Colorbar(fig[2, 2], hm_w; label = "m s⁻¹")
     
-    hm_T = heatmap!(ax_T, results[1][:xT], results[1][:zT], variables[2,1]; colormap = :thermal, colorrange = Tlims)
+    hm_T = heatmap!(ax_T, results[1][:xT], results[1][:zT], variables[2,1]; colormap = :thermal)
     Colorbar(fig[2, 4], hm_T; label = "ᵒC")
     
     hm_S = heatmap!(ax_S, results[1][:xT], results[1][:zT], variables[3,1]; colormap = :haline, colorrange = Slims)
