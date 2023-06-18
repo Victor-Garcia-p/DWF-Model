@@ -1,0 +1,9 @@
+Article from=
+https://www.researchgate.net/figure/Taylor-Diagram-to-compare-the-five-models-and-their-combinations-with-respect-to-the_fig2_316573931
+
+-Is the formula correct?
+-Add tytle to "correlation" and "centered RMS error"
+-Add sub marks to axis (each correlation has a mini - )
+-Leyend
+-Add tytle "observed" to the X
+-Correct colors
